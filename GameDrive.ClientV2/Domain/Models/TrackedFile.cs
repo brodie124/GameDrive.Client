@@ -4,7 +4,6 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using GameDrive.Client.Engine.Models;
 
 namespace GameDrive.ClientV2.Domain.Models;
 
@@ -13,8 +12,6 @@ public class  TrackedFile : INotifyPropertyChanged
     private FileSnapshot? _fileSnapshot;
     private DateTime _lastCheckedTime;
     public DateTime? _lastSynchronisedTime;
-
-
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

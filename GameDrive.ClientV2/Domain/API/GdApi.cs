@@ -11,7 +11,7 @@ using GameDrive.Server.Domain.Models.Responses;
 
 namespace GameDrive.ClientV2.Domain.API;
 
-public class GdApi
+public class GdApi : Singleton<GdApi>
 {
     private GdHttpHelper _gdHttpHelper;
     public GdAuthenticationApi Authentication { get; }

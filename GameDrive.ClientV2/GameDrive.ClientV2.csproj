@@ -8,10 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Domain\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Reference Include="GameDrive.Server.Domain">
         <HintPath>..\..\GameDrive.Server\GameDrive.Server\bin\Debug\net6.0\GameDrive.Server.Domain.dll</HintPath>
       </Reference>

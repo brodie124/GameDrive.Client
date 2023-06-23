@@ -31,8 +31,6 @@ public class SignInViewModel : INotifyPropertyChanged
         Console.WriteLine("Do sign in here...");
     }
 
-
-
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

@@ -3,9 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:GdSignIn="clr-namespace:GameDrive.ClientV2.SignIn" 
         xmlns:local="clr-namespace:GameDrive.ClientV2.SignIn"
         mc:Ignorable="d"
         Title="SignInWindow" Height="450" Width="800">
+    <Window.DataContext>
+        <GdSignIn:SignInViewModel />
+    </Window.DataContext>
     <Grid>
         <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="300">
             <Grid.ColumnDefinitions>
@@ -35,7 +39,9 @@
                 <Label>Username: </Label>
             </Border>
             <Border Grid.Row="0" Grid.Column="1">
-                <TextBox Name="UsernameTextBox" MinWidth="50"></TextBox>
+                <TextBox Name="UsernameTextBox" MinWidth="50" 
+                         Text="{Binding Path=Username, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                </TextBox>
             </Border>
 
             <Border Grid.Row="1" Grid.Column="0">
@@ -43,11 +49,11 @@
             </Border>
 
             <Border Grid.Row="1" Grid.Column="1">
-                <PasswordBox Name="PasswordTextBox" MinWidth="50"></PasswordBox>
+                <PasswordBox Name="PasswordTextBox" MinWidth="50" ></PasswordBox>
             </Border>
 
             <Border Grid.Row="2" Grid.Column="1">
-                <Button Width="75" HorizontalAlignment="Right">Sign In</Button>
+                <Button Width="75" HorizontalAlignment="Right" Click="OnSignInClicked">Sign In</Button>
             </Border>
         </Grid>
 

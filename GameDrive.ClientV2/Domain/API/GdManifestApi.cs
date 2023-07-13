@@ -11,8 +11,8 @@ public class GdManifestApi : GdApiHandler
     {
     }
 
-    public async ValueTask<ApiResponse<List<ManifestFileReport>>> CompareManifest(FileManifest fileManifest)
-    {
-        return await GdHttpHelper.HttpPost<List<ManifestFileReport>, FileManifest>($"Manifest/Compare", fileManifest);
-    }
+    // public async ValueTask<ApiResponse<List<ManifestFileReport>>> CompareManifest(FileManifest fileManifest)
+    // {
+    //     return await GdHttpHelper.HttpPost<List<ManifestFileReport>, FileManifest>($"Manifest/Compare", fileManifest);
+    // }
 }

@@ -2,14 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace GameDrive.ClientV2.SignIn;
 
 public class SignInViewModel : INotifyPropertyChanged
 {
+    private readonly SignInModel _model = new SignInModel(); 
+    
     private string _username = string.Empty;
     private string _password = string.Empty;
-    
+    private bool _isLoading = false;
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public string Username
@@ -24,12 +28,26 @@ public class SignInViewModel : INotifyPropertyChanged
         set => SetField(ref _password, value);
     }
 
-
-
-    public void DoSignIn()
+    public bool IsLoading
     {
-        Console.WriteLine("Do sign in here...");
+        get => _isLoading;
+        set {  
+            SetField(ref _isLoading, value);
+            OnPropertyChanged(nameof(ShowForm));
+            OnPropertyChanged(nameof(ShowLoadingSpinner));
+        }
     }
+
+    public bool ShowForm => !IsLoading;
+    public bool ShowLoadingSpinner => IsLoading;
+
+
+    public async Task DoSignIn()
+    {
+        IsLoading = !IsLoading;
+        await _model.SignInAsync();
+    }
+    
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {

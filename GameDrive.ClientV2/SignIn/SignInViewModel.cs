@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -31,11 +32,7 @@ public class SignInViewModel : INotifyPropertyChanged
     public bool IsLoading
     {
         get => _isLoading;
-        set {  
-            SetField(ref _isLoading, value);
-            OnPropertyChanged(nameof(ShowForm));
-            OnPropertyChanged(nameof(ShowLoadingSpinner));
-        }
+        set => SetField(ref _isLoading, value, PropertyChangedUpdateTrigger.All);
     }
 
     public bool ShowForm => !IsLoading;
@@ -44,8 +41,9 @@ public class SignInViewModel : INotifyPropertyChanged
 
     public async Task DoSignIn()
     {
-        IsLoading = !IsLoading;
+        IsLoading = true;
         await _model.SignInAsync();
+        IsLoading = false;
     }
     
 
@@ -54,11 +52,39 @@ public class SignInViewModel : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    protected bool SetField<T>(
+        ref T field, 
+        T value, 
+        PropertyChangedUpdateTrigger updateChangedTrigger = PropertyChangedUpdateTrigger.NamedProperty, 
+        [CallerMemberName] string? propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(field, value)) return false;
         field = value;
-        OnPropertyChanged(propertyName);
-        return true;
+
+        switch (updateChangedTrigger)
+        {
+            case PropertyChangedUpdateTrigger.All:
+                var siblingPropertyNames = this.GetType()
+                    .GetProperties()
+                    .Select(x => x.Name)
+                    .ToList();
+
+                foreach(var siblingPropertyName in siblingPropertyNames)
+                    OnPropertyChanged(siblingPropertyName);
+                    
+                OnPropertyChanged();
+                return true;
+            case PropertyChangedUpdateTrigger.NamedProperty:
+                OnPropertyChanged(propertyName);
+                return true;
+            default:
+                throw new NotImplementedException();
+        }
     }
+}
+
+public enum PropertyChangedUpdateTrigger
+{
+    All,
+    NamedProperty
 }

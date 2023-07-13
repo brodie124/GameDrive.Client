@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using GameDrive.Server.Domain.Models;
-using GameDrive.Server.Domain.Models.Responses;
-
-namespace GameDrive.ClientV2.Domain.API;
+﻿namespace GameDrive.ClientV2.Domain.API;
 
 public class GdManifestApi : GdApiHandler
 {

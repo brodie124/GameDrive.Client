@@ -4,7 +4,7 @@ namespace GameDrive.ClientV2.SignIn;
 
 public partial class SignInWindow : Window
 {
-    private SignInViewModel _viewModel;
+    private readonly SignInViewModel _viewModel;
     
     public SignInWindow()
     {
@@ -12,8 +12,8 @@ public partial class SignInWindow : Window
         _viewModel = (SignInViewModel) DataContext;
     }
 
-    private void OnSignInClicked(object sender, RoutedEventArgs e)
+    private async void OnSignInClicked(object sender, RoutedEventArgs e)
     {
-        _viewModel.DoSignIn();
+        await _viewModel.DoSignIn();
     }
 }

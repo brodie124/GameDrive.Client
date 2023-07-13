@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using GameDrive.ClientV2.Domain;
 using GameDrive.ClientV2.Domain.API;
 
 namespace GameDrive.ClientV2.SignIn;
@@ -9,7 +10,7 @@ public interface ICredentialProvider
     Task<Result<JwtCredential>> GetJwtCredentials(string username, string password);
 }
 
-public class CredentialProvider : ICredentialProvider 
+public class CredentialProvider : Singleton<CredentialProvider>, ICredentialProvider 
 {
     public async Task<Result<JwtCredential>> GetJwtCredentials(string username, string password)
     {

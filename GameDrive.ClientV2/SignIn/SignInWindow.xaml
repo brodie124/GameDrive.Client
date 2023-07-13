@@ -46,7 +46,7 @@
             </Border>
 
             <Border Grid.Row="2">
-                <ui:PasswordBox Name="PasswordTextBox" PlaceholderText="Password" MinWidth="50" />
+                <ui:PasswordBox PlaceholderText="Password" MinWidth="50" />
             </Border>
 
             <Border Grid.Row="3">

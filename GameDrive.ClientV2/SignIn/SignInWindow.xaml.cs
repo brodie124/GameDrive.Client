@@ -6,10 +6,11 @@ public partial class SignInWindow : Window
 {
     private readonly SignInViewModel _viewModel;
     
-    public SignInWindow()
+    public SignInWindow(SignInViewModel viewModel)
     {
+        _viewModel = viewModel;
+        DataContext = _viewModel;
         InitializeComponent();
-        _viewModel = (SignInViewModel) DataContext;
     }
 
     private async void OnSignInClicked(object sender, RoutedEventArgs e)

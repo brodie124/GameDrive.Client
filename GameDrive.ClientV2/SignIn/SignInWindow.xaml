@@ -6,12 +6,13 @@
         xmlns:GdSignIn="clr-namespace:GameDrive.ClientV2.SignIn" 
         xmlns:local="clr-namespace:GameDrive.ClientV2.SignIn"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        d:DataContext="{d:DesignInstance local:SignInViewModel}"
         mc:Ignorable="d"
-        Title="SignInWindow" Height="415" Width="390"
+        Title="Game Drive  |  Sign In" 
+        Height="415" 
+        Width="390"
+        ResizeMode="NoResize"
         Background="#2E2C2F">
-    <Window.DataContext>
-        <GdSignIn:SignInViewModel />
-    </Window.DataContext>
     <Window.Resources>
         <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"></local:BoolToVisibilityConverter> 
     </Window.Resources>

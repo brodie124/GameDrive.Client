@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
-using GameDrive.ClientV2.Domain;
 using GameDrive.ClientV2.Domain.API;
 
-namespace GameDrive.ClientV2.SignIn;
+namespace GameDrive.ClientV2.SignIn.Services;
 
 public interface ICredentialProvider
 {

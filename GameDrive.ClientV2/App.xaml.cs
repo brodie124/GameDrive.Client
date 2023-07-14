@@ -2,6 +2,7 @@
 using System.Windows;
 using GameDrive.ClientV2.Domain.API;
 using GameDrive.ClientV2.SignIn;
+using GameDrive.ClientV2.SignIn.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GameDrive.ClientV2;

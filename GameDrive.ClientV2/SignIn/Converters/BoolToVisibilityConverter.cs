@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace GameDrive.ClientV2.SignIn;
+namespace GameDrive.ClientV2.SignIn.Converters;
 
 public class BoolToVisibilityConverter : IValueConverter
 {

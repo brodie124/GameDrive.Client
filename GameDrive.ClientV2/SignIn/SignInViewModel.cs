@@ -56,7 +56,7 @@ public class SignInViewModel : ViewModelBase
         }
 
         ShowMessageBox(new ShowMessageBoxRequest(
-            Content: "You have successfully signed in.\n\nA new window will open.",
+            Content: "You have successfully signed in.\n\nA new window will now open.",
             Title: "GameDrive",
             PrimaryButton: new MessageBoxButtonState("OK", (messageBox, eventArgs) => { messageBox.Close(); }),
             SecondaryButton: MessageBoxButtonState.CloseButton()

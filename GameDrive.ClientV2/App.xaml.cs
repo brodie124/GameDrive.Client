@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using GameDrive.ClientV2.Domain.API;
 using GameDrive.ClientV2.SignIn;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -28,7 +29,11 @@ public partial class App : Application
 
     private static void ConfigureServices(IServiceCollection serviceCollection)
     {
+        serviceCollection.AddSingleton<IGdApi, GdApi>();
+        serviceCollection.AddSingleton<ICredentialProvider, CredentialProvider>();
+        
         serviceCollection.AddTransient<SignInWindow>();
         serviceCollection.AddTransient<SignInViewModel>();
+        serviceCollection.AddTransient<SignInModel>();
     }
 }

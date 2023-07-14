@@ -11,9 +11,9 @@ using GameDrive.Server.Domain.Models.Responses;
 
 namespace GameDrive.ClientV2.Domain.API;
 
-public class GdFileApi : GdApiHandler
+public class GdFileApi : GdApiHandler, IGdFileApi
 {
-    public delegate void GdProgressUpdateDelegate(GdTransferProgress transferProgress);
+    
 
     public GdFileApi(GdHttpHelper gdHttpHelper) : base(gdHttpHelper)
     {
@@ -22,7 +22,7 @@ public class GdFileApi : GdApiHandler
     public async ValueTask<ApiResponse<string>> DownloadFile(
         Guid storageObjectId,
         Stream destinationStream,
-        GdProgressUpdateDelegate updateDelegate,
+        IGdFileApi.GdProgressUpdateDelegate updateDelegate,
         int bufferSize = 256
     )
     {
@@ -74,7 +74,7 @@ public class GdFileApi : GdApiHandler
     public async ValueTask<ApiResponse<bool>> UploadFile(
         LocalGameProfile profile, 
         FileSnapshot file,
-        GdProgressUpdateDelegate updateDelegate
+        IGdFileApi.GdProgressUpdateDelegate updateDelegate
     )
     {
         var boundary = Guid.NewGuid().ToString();
@@ -117,7 +117,7 @@ public class GdFileApi : GdApiHandler
 
     private async void MonitorStreamProgress(
         Stream stream,
-        GdProgressUpdateDelegate updateDelegate, 
+        IGdFileApi.GdProgressUpdateDelegate updateDelegate, 
         CancellationToken cancellationToken = default
     )
     {
@@ -148,6 +148,24 @@ public class GdFileApi : GdApiHandler
             previousPosition = position;
         }
     }
+}
+
+public interface IGdFileApi
+{
+    delegate void GdProgressUpdateDelegate(GdTransferProgress transferProgress);
+    
+    ValueTask<ApiResponse<string>> DownloadFile(
+        Guid storageObjectId,
+        Stream destinationStream,
+        GdProgressUpdateDelegate updateDelegate,
+        int bufferSize = 256
+    );
+
+    ValueTask<ApiResponse<bool>> UploadFile(
+        LocalGameProfile profile,
+        FileSnapshot file,
+        GdProgressUpdateDelegate updateDelegate
+    );
 }
 
 public record GdTransferProgress(

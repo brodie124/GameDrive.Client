@@ -9,7 +9,7 @@ namespace GameDrive.ClientV2.SignIn;
 
 public class SignInViewModel : INotifyPropertyChanged
 {
-    private readonly SignInModel _model = new SignInModel(); 
+    private readonly SignInModel _model; 
     
     private string _username = string.Empty;
     private string _password = string.Empty;
@@ -38,16 +38,19 @@ public class SignInViewModel : INotifyPropertyChanged
     public bool ShowForm => !IsLoading;
     public bool ShowLoadingSpinner => IsLoading;
 
-
+    public SignInViewModel(SignInModel signInModel)
+    {
+        _model = signInModel;
+    }
+    
     public async Task DoSignIn()
     {
         IsLoading = true;
-        await _model.SignInAsync();
+        await _model.SignInAsync(_username, _password);
         IsLoading = false;
     }
-    
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }

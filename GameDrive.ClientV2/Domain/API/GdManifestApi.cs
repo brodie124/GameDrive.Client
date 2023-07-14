@@ -1,6 +1,6 @@
 ﻿namespace GameDrive.ClientV2.Domain.API;
 
-public class GdManifestApi : GdApiHandler
+public class GdManifestApi : GdApiHandler, IGdManifestApi
 {
     public GdManifestApi(GdHttpHelper gdHttpHelper) : base(gdHttpHelper)
     {
@@ -10,4 +10,8 @@ public class GdManifestApi : GdApiHandler
     // {
     //     return await GdHttpHelper.HttpPost<List<ManifestFileReport>, FileManifest>($"Manifest/Compare", fileManifest);
     // }
+}
+
+public interface IGdManifestApi
+{
 }

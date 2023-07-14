@@ -10,20 +10,24 @@ public interface ICredentialProvider
     Task<Result<JwtCredential>> GetJwtCredentials(string username, string password);
 }
 
-public class CredentialProvider : Singleton<CredentialProvider>, ICredentialProvider 
+public class CredentialProvider : ICredentialProvider 
 {
+    private readonly IGdApi _gdApi;
+
+    public CredentialProvider(IGdApi gdApi)
+    {
+        _gdApi = gdApi;
+    }
+    
     public async Task<Result<JwtCredential>> GetJwtCredentials(string username, string password)
     {
-        var api = GdApi.GetInstance();
-        var response = await api.Authentication.GetAuthenticationToken(username, password);
-
+        var response = await _gdApi.Authentication.GetAuthenticationToken(username, password);
         if (!response.IsSuccess || response.Data is null)
         {
             return Result.Failure<JwtCredential>(
                 $"An error occurred fetching the JWT credentials. Inner Error = {response.ErrorMessage}");
         }
         
-        // return 
         return new JwtCredential(response.Data);
     }
 }

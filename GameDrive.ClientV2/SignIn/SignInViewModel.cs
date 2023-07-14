@@ -1,21 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using GameDrive.ClientV2.Domain.Models;
 
 namespace GameDrive.ClientV2.SignIn;
 
-public class SignInViewModel : INotifyPropertyChanged
+public class SignInViewModel : ViewModelBase
 {
-    private readonly SignInModel _model; 
-    
+    private readonly ISignInModel _model;
+
     private string _username = string.Empty;
     private string _password = string.Empty;
     private bool _isLoading = false;
-
-    public event PropertyChangedEventHandler? PropertyChanged;
 
     public string Username
     {
@@ -38,51 +32,35 @@ public class SignInViewModel : INotifyPropertyChanged
     public bool ShowForm => !IsLoading;
     public bool ShowLoadingSpinner => IsLoading;
 
-    public SignInViewModel(SignInModel signInModel)
+    public SignInViewModel(ISignInModel signInModel)
     {
         _model = signInModel;
     }
-    
+
     public async Task DoSignIn()
     {
         IsLoading = true;
-        await _model.SignInAsync(_username, _password);
+        var signInResult = await _model.SignInAsync(_username, _password);
         IsLoading = false;
-    }
 
-    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
 
-    protected bool SetField<T>(
-        ref T field, 
-        T value, 
-        PropertyChangedUpdateTrigger updateChangedTrigger = PropertyChangedUpdateTrigger.NamedProperty, 
-        [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-        field = value;
-
-        switch (updateChangedTrigger)
+        if (signInResult.IsFailure)
         {
-            case PropertyChangedUpdateTrigger.All:
-                var siblingPropertyNames = this.GetType()
-                    .GetProperties()
-                    .Select(x => x.Name)
-                    .ToList();
-
-                foreach(var siblingPropertyName in siblingPropertyNames)
-                    OnPropertyChanged(siblingPropertyName);
-                    
-                OnPropertyChanged();
-                return true;
-            case PropertyChangedUpdateTrigger.NamedProperty:
-                OnPropertyChanged(propertyName);
-                return true;
-            default:
-                throw new NotImplementedException();
+            ShowMessageBox(new ShowMessageBoxRequest(
+                Content: "An invalid username/password combination was provided",
+                Title: "GameDrive",
+                PrimaryButton: new MessageBoxButtonState("OK", (messageBox, eventArgs) => { messageBox.Close(); }),
+                SecondaryButton: MessageBoxButtonState.CloseButton()
+            ));
+            return;
         }
+
+        ShowMessageBox(new ShowMessageBoxRequest(
+            Content: "You have successfully signed in.\n\nA new window will open.",
+            Title: "GameDrive",
+            PrimaryButton: new MessageBoxButtonState("OK", (messageBox, eventArgs) => { messageBox.Close(); }),
+            SecondaryButton: MessageBoxButtonState.CloseButton()
+        ));
     }
 }
 

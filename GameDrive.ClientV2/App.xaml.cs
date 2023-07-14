@@ -34,6 +34,6 @@ public partial class App : Application
         
         serviceCollection.AddTransient<SignInWindow>();
         serviceCollection.AddTransient<SignInViewModel>();
-        serviceCollection.AddTransient<SignInModel>();
+        serviceCollection.AddTransient<ISignInModel, SignInModel>();
     }
 }

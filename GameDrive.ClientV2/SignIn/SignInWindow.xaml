@@ -43,11 +43,12 @@
             
             <Border Grid.Row="1">
                 <ui:TextBox PlaceholderText="Username"
-                            Text="{Binding Path=Username, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                            Text="{Binding Path=Username, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
             </Border>
 
             <Border Grid.Row="2">
-                <ui:PasswordBox PlaceholderText="Password" MinWidth="50" />
+                <ui:PasswordBox PlaceholderText="Password" 
+                                Password="{Binding Path=Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
             </Border>
 
             <Border Grid.Row="3">

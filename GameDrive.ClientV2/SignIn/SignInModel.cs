@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows;
+using CSharpFunctionalExtensions;
 
 namespace GameDrive.ClientV2.SignIn;
 
@@ -13,22 +14,21 @@ public class SignInModel  : ISignInModel
         _credentialProvider = credentialProvider;
     }
     
-    public async Task SignInAsync(string username, string password)
+    public async Task<Result<JwtCredential>> SignInAsync(string username, string password)
     {
         Console.WriteLine("Do sign in here...");
         await Task.Delay(5000);
         var signInResult = await _credentialProvider.GetJwtCredentials(username, password);
         if (signInResult.IsFailure)
         {
-            MessageBox.Show("Failed to log in!");
-            return;
+            return Result.Failure<JwtCredential>(signInResult.Error);
         }
-        
-        MessageBox.Show("Successfully logged in!");
+
+        return signInResult.Value;
     }
 }
 
 public interface ISignInModel
 {
-    Task SignInAsync(string username, string password);
+    Task<Result<JwtCredential>> SignInAsync(string username, string password);
 }

@@ -32,7 +32,7 @@ public class GdFileApi : GdApiHandler, IGdFileApi
         {
             var storageObjectIdEncoded = HttpUtility.UrlEncode(storageObjectId.ToString());
             await using var gdStream = await GdHttpHelper.HttpClient.GetStreamAsync($"Download/{storageObjectIdEncoded}");
-            _ = Task.Run(() => MonitorStreamProgress(destinationStream, updateDelegate, cancellationTokenSource.Token));
+            _ = Task.Run(() => MonitorStreamProgress(destinationStream, updateDelegate, cancellationTokenSource.Token), cancellationTokenSource.Token);
 
             var buffer = new byte[bufferSize];
             using var sha1 = SHA1.Create();
@@ -103,7 +103,7 @@ public class GdFileApi : GdApiHandler, IGdFileApi
 
 
         var cancellationTokenSource = new CancellationTokenSource();
-        _ = Task.Run(() => MonitorStreamProgress(fileStream, updateDelegate, cancellationTokenSource.Token));
+        _ = Task.Run(() => MonitorStreamProgress(fileStream, updateDelegate, cancellationTokenSource.Token), cancellationTokenSource.Token);
 
         try
         {
@@ -126,14 +126,14 @@ public class GdFileApi : GdApiHandler, IGdFileApi
         {
             if (stream is { Position: 0, Length: 0 })
             {
-                await Task.Delay(TimeSpan.FromMilliseconds(100));
+                await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
                 continue;
             }
 
             var position = stream.Position;
             if (position == previousPosition)
             {
-                await Task.Delay(TimeSpan.FromMilliseconds(100));
+                await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
                 continue;
             }
 
@@ -144,7 +144,7 @@ public class GdFileApi : GdApiHandler, IGdFileApi
                 ProgressPercentage: percentage
             ));
 
-            await Task.Delay(TimeSpan.FromMilliseconds(100));
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
             previousPosition = position;
         }
     }

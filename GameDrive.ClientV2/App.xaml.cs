@@ -22,13 +22,7 @@ public partial class App : Application
 
         _serviceProvider = serviceCollection.BuildServiceProvider();
     }
-
-    private void OnStartUp(object sender, StartupEventArgs startupEventArgs)
-    {
-        var signInWindow = _serviceProvider.GetRequiredService<SignInWindow>();
-        signInWindow.Show();
-    }
-
+    
     private static void ConfigureServices(IServiceCollection serviceCollection)
     {
         serviceCollection.AddSingleton<IGdApi, GdApi>();
@@ -39,5 +33,11 @@ public partial class App : Application
         serviceCollection.AddTransient<ISignInModel, SignInModel>();
 
         serviceCollection.AddTransient<DashboardWindow>();
+    }
+
+    private void OnStartUp(object sender, StartupEventArgs startupEventArgs)
+    {
+        var signInWindow = _serviceProvider.GetRequiredService<SignInWindow>();
+        signInWindow.Show();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using GameDrive.ClientV2.Dashboard;
 using GameDrive.ClientV2.Domain.API;
 using GameDrive.ClientV2.SignIn;
 using GameDrive.ClientV2.SignIn.Services;
@@ -36,5 +37,7 @@ public partial class App : Application
         serviceCollection.AddTransient<SignInWindow>();
         serviceCollection.AddTransient<SignInViewModel>();
         serviceCollection.AddTransient<ISignInModel, SignInModel>();
+
+        serviceCollection.AddTransient<DashboardWindow>();
     }
 }

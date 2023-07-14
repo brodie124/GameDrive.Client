@@ -10,6 +10,9 @@ public partial class SignInWindow : Window
     {
         _viewModel = viewModel;
         DataContext = _viewModel;
+
+        _viewModel.RequestClose += Close;
+        
         InitializeComponent();
     }
 

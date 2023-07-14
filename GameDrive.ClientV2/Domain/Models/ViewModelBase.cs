@@ -94,7 +94,7 @@ public abstract class ViewModelBase : INotifyPropertyChanged
         if (!showMessageBoxRequest.SecondaryButton?.IsVisible ?? true)
             messageBox.ButtonLeftAppearance = ControlAppearance.Transparent;
 
-        messageBox.Show();
+        messageBox.ShowDialog();
     }
 }
 

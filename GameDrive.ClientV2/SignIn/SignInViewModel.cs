@@ -1,15 +1,22 @@
+using System;
 using System.Threading.Tasks;
+using GameDrive.ClientV2.Dashboard;
 using GameDrive.ClientV2.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GameDrive.ClientV2.SignIn;
 
 public class SignInViewModel : ViewModelBase
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly ISignInModel _model;
 
     private string _username = string.Empty;
     private string _password = string.Empty;
     private bool _isLoading = false;
+
+    public event OnRequestClose? RequestClose;
+    public delegate void OnRequestClose();
 
     public string Username
     {
@@ -32,8 +39,12 @@ public class SignInViewModel : ViewModelBase
     public bool ShowForm => !IsLoading;
     public bool ShowLoadingSpinner => IsLoading;
 
-    public SignInViewModel(ISignInModel signInModel)
+    public SignInViewModel(
+        IServiceProvider serviceProvider,
+        ISignInModel signInModel
+    )
     {
+        _serviceProvider = serviceProvider;
         _model = signInModel;
     }
 
@@ -61,6 +72,15 @@ public class SignInViewModel : ViewModelBase
             PrimaryButton: new MessageBoxButtonState("OK", (messageBox, eventArgs) => { messageBox.Close(); }),
             SecondaryButton: MessageBoxButtonState.CloseButton()
         ));
+
+        // TODO: persist JWT credentials before moving on to the next window
+        var dashboardWindow = _serviceProvider.GetRequiredService<DashboardWindow>();
+        dashboardWindow.Show();
+
+        if (RequestClose is null)
+            throw new InvalidOperationException("RequestClose event handler must have at least one subscription.");
+        
+        RequestClose();
     }
 }
 

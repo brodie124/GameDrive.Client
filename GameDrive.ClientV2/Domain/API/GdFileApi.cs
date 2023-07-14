@@ -108,7 +108,7 @@ public class GdFileApi : GdApiHandler, IGdFileApi
         try
         {
             return await GdHttpHelper.HttpPostMultipartFormData<bool>($"Upload?{queryParams}", content);
-        } catch(Exception ex)
+        } catch(Exception)
         {
             cancellationTokenSource.Cancel();
             throw;

@@ -52,7 +52,7 @@ public class GdHttpHelper
             using var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
             this.SetDefaultHeaders(request);
 
-            var httpResponse = await _httpClient.SendAsync(request, cancellationToken); ;
+            var httpResponse = await HttpClient.SendAsync(request, cancellationToken); ;
             if (httpResponse.StatusCode != HttpStatusCode.OK)
             {
                 var httpContent = await httpResponse.Content.ReadAsStringAsync();
@@ -122,7 +122,7 @@ public class GdHttpHelper
             request.Content = multipartFormDataContent;
             //request.Content.Headers.ContentType = new MediaTypeHeaderValue(MediaTypeNames.Application.Octet);
 
-            var httpResponse = await _httpClient.SendAsync(request, cancellationToken);
+            var httpResponse = await HttpClient.SendAsync(request, cancellationToken);
             if (httpResponse.StatusCode != HttpStatusCode.OK)
             {
                 var httpContent = await httpResponse.Content.ReadAsStringAsync();

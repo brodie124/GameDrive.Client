@@ -9,16 +9,15 @@ namespace GameDrive.ClientV2.Domain.Models;
 
 public class  TrackedFile : INotifyPropertyChanged
 {
-    private FileSnapshot? _fileSnapshot;
     private DateTime _lastCheckedTime;
     public DateTime? _lastSynchronisedTime;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public int Id { get; set; }
-    public string ProfileId { get; set; }
-    public string FilePath { get; set; }
-    public string RelativePath { get; set; }
+    public string ProfileId { get; set; } = default!;
+    public string FilePath { get; set; } = default!;
+    public string RelativePath { get; set; } = default!;
     public string? StoredFileHash { get; set; }
 
     public DateTime FirstCheckedTime { get; set; }
@@ -45,7 +44,7 @@ public class  TrackedFile : INotifyPropertyChanged
         }
     }
 
-    public FileSnapshot? Snapshot => _fileSnapshot;
+    public FileSnapshot? Snapshot { get; private set; }
 
     public bool IsFileMissing => Snapshot == null && LastCheckedTime != DateTime.MinValue;
 
@@ -62,7 +61,7 @@ public class  TrackedFile : INotifyPropertyChanged
 
     public void SetSnapshot(FileSnapshot? fileSnapshot)
     {
-        _fileSnapshot = fileSnapshot;
+        Snapshot = fileSnapshot;
         _lastCheckedTime = DateTime.Now;
         NotifyPropertyChanged();
     }

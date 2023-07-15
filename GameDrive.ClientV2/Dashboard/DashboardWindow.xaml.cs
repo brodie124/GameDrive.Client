@@ -4,8 +4,13 @@ namespace GameDrive.ClientV2.Dashboard;
 
 public partial class DashboardWindow : Window
 {
-    public DashboardWindow()
+    private readonly DashboardViewModel _viewModel;
+
+    public DashboardWindow(DashboardViewModel viewModel)
     {
+        _viewModel = viewModel;
+        DataContext = _viewModel;
+        
         InitializeComponent();
     }
 }

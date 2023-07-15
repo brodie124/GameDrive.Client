@@ -33,6 +33,8 @@ public partial class App : Application
         serviceCollection.AddTransient<ISignInModel, SignInModel>();
 
         serviceCollection.AddTransient<DashboardWindow>();
+        serviceCollection.AddTransient<DashboardViewModel>();
+        serviceCollection.AddTransient<IDashboardModel, DashboardModel>();
     }
 
     private void OnStartUp(object sender, StartupEventArgs startupEventArgs)

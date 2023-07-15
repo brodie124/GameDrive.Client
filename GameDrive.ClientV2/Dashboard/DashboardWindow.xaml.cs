@@ -13,4 +13,13 @@ public partial class DashboardWindow : Window
         
         InitializeComponent();
     }
+
+    private void OnMenuScanForGamesClicked(object sender, RoutedEventArgs e)
+    {
+    }
+
+    private void OnMenuExitClicked(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
 }

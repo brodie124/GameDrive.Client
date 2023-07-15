@@ -3,19 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:GdSignIn="clr-namespace:GameDrive.ClientV2.SignIn" 
+        xmlns:GdSignIn="clr-namespace:GameDrive.ClientV2.SignIn"
         xmlns:local="clr-namespace:GameDrive.ClientV2.SignIn"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:converters="clr-namespace:GameDrive.ClientV2.SignIn.Converters"
         d:DataContext="{d:DesignInstance local:SignInViewModel}"
         mc:Ignorable="d"
-        Title="Game Drive  |  Sign In" 
-        Height="415" 
+        Title="Game Drive  |  Sign In"
+        Height="415"
         Width="390"
         ResizeMode="NoResize"
         Background="#2E2C2F">
     <Window.Resources>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"></converters:BoolToVisibilityConverter> 
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"></converters:BoolToVisibilityConverter>
     </Window.Resources>
     <Grid>
         <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="250"
@@ -39,29 +39,33 @@
                 </Style>
             </Grid.Resources>
             <Border Grid.Row="0">
-                <TextBlock TextAlignment="Center" Text="Sign In" Foreground="#F2FDFF" FontSize="32" Margin="0,0,0,24"/>
+                <TextBlock TextAlignment="Center" Text="Sign In" Foreground="#F2FDFF" FontSize="32" Margin="0,0,0,24" />
             </Border>
-            
+
             <Border Grid.Row="1">
                 <ui:TextBox PlaceholderText="Username"
+                            Name="UsernameTextBox"
+                            
                             Text="{Binding Path=Username, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                             KeyUp="OnFormKeyUp"
                             TabIndex="0" />
             </Border>
 
             <Border Grid.Row="2">
-                <ui:PasswordBox PlaceholderText="Password" 
+                <ui:PasswordBox PlaceholderText="Password"
                                 Password="{Binding Path=Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                 KeyUp="OnFormKeyUp"
-                                TabIndex="0"/>
+                                TabIndex="0" />
             </Border>
 
             <Border Grid.Row="3">
                 <Button Width="75" HorizontalAlignment="Right" Click="OnSignInClicked"
-                        TabIndex="0">Sign In</Button>
+                        TabIndex="0">
+                    Sign In
+                </Button>
             </Border>
         </Grid>
-        
+
         <Grid Visibility="{Binding ShowLoadingSpinner, Converter={StaticResource BoolToVisibilityConverter}}">
             <ui:ProgressRing IsIndeterminate="true" />
         </Grid>

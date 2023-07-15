@@ -44,16 +44,21 @@
             
             <Border Grid.Row="1">
                 <ui:TextBox PlaceholderText="Username"
-                            Text="{Binding Path=Username, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                            Text="{Binding Path=Username, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                            KeyUp="OnFormKeyUp"
+                            TabIndex="0" />
             </Border>
 
             <Border Grid.Row="2">
                 <ui:PasswordBox PlaceholderText="Password" 
-                                Password="{Binding Path=Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                Password="{Binding Path=Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                KeyUp="OnFormKeyUp"
+                                TabIndex="0"/>
             </Border>
 
             <Border Grid.Row="3">
-                <Button Width="75" HorizontalAlignment="Right" Click="OnSignInClicked">Sign In</Button>
+                <Button Width="75" HorizontalAlignment="Right" Click="OnSignInClicked"
+                        TabIndex="0">Sign In</Button>
             </Border>
         </Grid>
         

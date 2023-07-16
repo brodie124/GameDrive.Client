@@ -23,4 +23,9 @@ public partial class DashboardWindow : Window
     {
         Close();
     }
+
+    private async void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        await _viewModel.StartupAsync();
+    }
 }

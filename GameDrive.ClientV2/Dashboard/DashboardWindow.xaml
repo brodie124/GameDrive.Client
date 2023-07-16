@@ -8,7 +8,8 @@
         d:DataContext="{d:DesignInstance local:DashboardViewModel}"
         mc:Ignorable="d"
         Title="Game Drive  |  Dashboard" Height="450" Width="800"
-        Background="#2E2C2F">
+        Background="#2E2C2F"
+        Loaded="OnLoaded">
     <Window.Resources>
         <Style TargetType="MenuItem">
             <Setter Property="Foreground" Value="GhostWhite"></Setter>
@@ -43,11 +44,12 @@
                                     <RowDefinition></RowDefinition>
                                 </Grid.RowDefinitions>
                                 <TextBlock Grid.Row="0"
+                                           Text="{Binding Path=Name}"
+                                           FontSize="16" />
+                                <TextBlock Grid.Row="1"
                                            Text="{Binding Path=Id}"
                                            Foreground="DarkGray" 
                                            FontSize="10" />
-
-                                <TextBlock Grid.Row="1" Text="{Binding Path=Name}" />
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>

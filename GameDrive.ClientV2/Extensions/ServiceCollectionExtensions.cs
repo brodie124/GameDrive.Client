@@ -1,4 +1,6 @@
 using GameDrive.ClientV2.Domain.Database;
+using GameDrive.ClientV2.Domain.Database.DataAccess;
+using GameDrive.ClientV2.Domain.Database.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GameDrive.ClientV2.Extensions;
@@ -12,6 +14,17 @@ public static class ServiceCollectionExtensions
     {
         serviceCollection.AddSingleton<IGdDatabaseContext, GdLocalClientDatabaseContext>(
             serviceProvider => new GdLocalClientDatabaseContext(fileName));
+        return serviceCollection;
+    }
+
+    public static IServiceCollection RegisterGameDriveRepositories(
+        this IServiceCollection serviceCollection
+    )
+    {
+        serviceCollection
+            .AddTransient<ILocalGameProfileDataAccess, LocalGameProfileDataAccess>()
+            .AddTransient<ILocalGameProfileRepository, LocalGameProfileRepository>()
+            ;
         return serviceCollection;
     }
 }

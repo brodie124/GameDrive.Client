@@ -82,7 +82,7 @@ public class GdFileApi : GdApiHandler, IGdFileApi
         var bucketId = HttpUtility.UrlEncode(profile.Id);
         var bucketName = HttpUtility.UrlEncode(profile.Name);
         var relativeFilePath = HttpUtility.UrlEncode(file.GdFilePath);
-        var fileHash = HttpUtility.UrlEncode(file.Hash);
+        var fileHash = HttpUtility.UrlEncode(file.FileHash);
         var fileCreatedDate = HttpUtility.UrlEncode(file.CreatedDate.ToUniversalTime().ToString("s"));
         var fileLastModifiedDate = HttpUtility.UrlEncode(file.LastModified.ToUniversalTime().ToString("s"));
         var queryParams = $"bucketId={bucketId}&bucketName={bucketName}&gdFilePath={relativeFilePath}&fileHash={fileHash}&fileCreatedDate={fileCreatedDate}&fileLastModifiedDate={fileLastModifiedDate}";

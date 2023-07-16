@@ -80,16 +80,16 @@ public class  TrackedFile : INotifyPropertyChanged
         var hashBytes = await hasher.ComputeHashAsync(fileStream);
         var hash = Convert.ToBase64String(hashBytes);
 
-        var fileSnapshot = new FileSnapshot()
-        {
-            Path = file.FullName,
-            GdFilePath = RelativePath,
-            Hash = hash,
-            FileSize = file.Length,
-            LastModified = file.LastWriteTimeUtc,
-            CreatedDate = file.CreationTimeUtc,
-            LastChecked = DateTime.Now
-        };
+        var fileSnapshot = new FileSnapshot
+        (
+            GdFilePath: RelativePath,
+            Path: file.FullName,
+            FileHash: hash,
+            FileSize: file.Length,
+            CreatedDate: file.CreationTimeUtc,
+            LastModified: file.LastWriteTimeUtc,
+            LastChecked: DateTime.Now
+        );
 
         SetSnapshot(fileSnapshot);
     }

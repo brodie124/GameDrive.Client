@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using GameDrive.ClientV2.DiscoverGames.Services;
 using GameDrive.ClientV2.Domain.Database.Repositories;
-using GameDrive.ClientV2.Domain.Discovery;
 using GameDrive.ClientV2.Domain.Models;
 using GameDrive.Server.Domain.Helpers;
 

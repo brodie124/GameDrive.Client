@@ -42,7 +42,10 @@
                                     <RowDefinition></RowDefinition>
                                     <RowDefinition></RowDefinition>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Text="{Binding Path=Id}" />
+                                <TextBlock Grid.Row="0"
+                                           Text="{Binding Path=Id}"
+                                           Foreground="DarkGray" 
+                                           FontSize="10" />
 
                                 <TextBlock Grid.Row="1" Text="{Binding Path=Name}" />
                             </Grid>

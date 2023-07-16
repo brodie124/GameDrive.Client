@@ -1,5 +1,6 @@
-using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using GameDrive.ClientV2.Domain.Models;
 using GameDrive.Server.Domain.Helpers;
@@ -14,7 +15,15 @@ public class DiscoverGamesViewModel : ViewModelBase
     private int _progressValue;
     private string _activityStatusText = string.Empty;
     private string _progressStatusText = string.Empty;
-    
+
+    private List<GameObject> _discoveredGameObjects;
+
+    public IReadOnlyList<GameObject> DiscoveredGameObjects
+    {
+        get => _discoveredGameObjects;
+        private set => SetField(ref _discoveredGameObjects, value.ToList());
+    }
+
     public event OnRequestClose? RequestClose;
     public delegate void OnRequestClose();
 
@@ -74,8 +83,9 @@ public class DiscoverGamesViewModel : ViewModelBase
         var discoveredProfiles = await _model.DiscoverGamesAsync(gameList, OnProgressUpdate);
         
         SetStatus("Discovering game files...", "");
-        await _model.SaveDiscoveredGames(discoveredProfiles, OnProgressUpdate);
-
+        var discoveredGameObjects = await _model.SaveDiscoveredGames(discoveredProfiles, OnProgressUpdate);
+        DiscoveredGameObjects = discoveredGameObjects;
+        
         _allowClose = true;
         RequestClose?.Invoke();
     }

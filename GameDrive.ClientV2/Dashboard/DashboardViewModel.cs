@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using GameDrive.ClientV2.DiscoverGames;
@@ -13,7 +14,13 @@ public class DashboardViewModel : ViewModelBase
     private readonly IServiceProvider _serviceProvider;
     private readonly IDashboardModel _model;
 
-    public IReadOnlyList<LocalGameProfile> LocalGameProfiles => GetLocalGameProfiles().Result;
+    private List<LocalGameProfile> _localGameProfiles = Array.Empty<LocalGameProfile>().ToList();
+
+    public IReadOnlyList<LocalGameProfile> LocalGameProfiles
+    {
+        get => _localGameProfiles;
+        private set => SetField(ref _localGameProfiles, value.ToList());
+    }
 
     public DashboardViewModel(
         IServiceProvider serviceProvider,
@@ -39,6 +46,9 @@ public class DashboardViewModel : ViewModelBase
 
         var discoverGamesWindow = _serviceProvider.GetRequiredService<DiscoverGamesWindow>();
         discoverGamesWindow.ShowDialog();
+
+        var gameObjects = discoverGamesWindow.DiscoveredGameObjects;
+        LocalGameProfiles = gameObjects.Select(x => x.Profile).ToList();
     }
 
     public async Task<IReadOnlyList<LocalGameProfile>> GetLocalGameProfiles()

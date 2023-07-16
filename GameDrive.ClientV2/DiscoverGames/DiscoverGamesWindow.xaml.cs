@@ -1,11 +1,15 @@
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
+using GameDrive.ClientV2.Domain.Models;
 
 namespace GameDrive.ClientV2.DiscoverGames;
 
 public partial class DiscoverGamesWindow : Window
 {
     private readonly DiscoverGamesViewModel _viewModel;
+
+    public IReadOnlyList<GameObject> DiscoveredGameObjects => _viewModel.DiscoveredGameObjects;
 
     public DiscoverGamesWindow(DiscoverGamesViewModel viewModel)
     {

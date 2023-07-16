@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using GameDrive.ClientV2.Dashboard;
+using GameDrive.ClientV2.DiscoverGames;
 using GameDrive.ClientV2.Domain.API;
 using GameDrive.ClientV2.Domain.Database;
 using GameDrive.ClientV2.Extensions;
@@ -24,28 +25,35 @@ public partial class App : Application
 
         _serviceProvider = serviceCollection.BuildServiceProvider();
     }
-    
+
     private static void ConfigureServices(IServiceCollection serviceCollection)
     {
         serviceCollection.UseGameDriveSqliteDatabase("gdclient.sqlite");
-        
+
         serviceCollection.AddSingleton<IGdApi, GdApi>();
         serviceCollection.AddTransient<ICredentialProvider, CredentialProvider>();
-        
-        serviceCollection.AddTransient<SignInWindow>();
-        serviceCollection.AddTransient<SignInViewModel>();
-        serviceCollection.AddTransient<ISignInModel, SignInModel>();
 
-        serviceCollection.AddTransient<DashboardWindow>();
-        serviceCollection.AddTransient<DashboardViewModel>();
-        serviceCollection.AddTransient<IDashboardModel, DashboardModel>();
+        serviceCollection
+            .AddTransient<SignInWindow>()
+            .AddTransient<SignInViewModel>()
+            .AddTransient<ISignInModel, SignInModel>();
+
+        serviceCollection
+            .AddTransient<DashboardWindow>()
+            .AddTransient<DashboardViewModel>()
+            .AddTransient<IDashboardModel, DashboardModel>();
+
+        serviceCollection
+            .AddTransient<DiscoverGamesWindow>()
+            .AddTransient<DiscoverGamesViewModel>()
+            .AddTransient<IDiscoverGamesModel, DiscoverGamesModel>();
     }
 
     private async void OnStartUp(object sender, StartupEventArgs startupEventArgs)
     {
         var databaseContext = _serviceProvider.GetRequiredService<IGdDatabaseContext>();
         await databaseContext.CreateDatabaseAsync();
-        
+
         var signInWindow = _serviceProvider.GetRequiredService<SignInWindow>();
         signInWindow.Show();
     }

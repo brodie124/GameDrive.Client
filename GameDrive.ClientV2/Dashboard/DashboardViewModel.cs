@@ -6,7 +6,7 @@ using GameDrive.ClientV2.Domain.Models;
 
 namespace GameDrive.ClientV2.Dashboard;
 
-public class DashboardViewModel
+public class DashboardViewModel : ViewModelBase
 {
     private readonly IDashboardModel _model;
 
@@ -15,6 +15,17 @@ public class DashboardViewModel
     public DashboardViewModel(IDashboardModel model)
     {
         _model = model;
+    }
+
+    public async Task ScanForGames()
+    {
+        ShowMessageBox(new ShowMessageBoxRequest(
+            Content: "This process will re-discover ALL games and may take several minutes to complete.\n\n" +
+                     "Are you sure you wish to proceed?",
+            Title: "GameDrive",
+            PrimaryButton: MessageBoxButtonState.YesButton(),
+            SecondaryButton: MessageBoxButtonState.CancelButton()
+        ));
     }
 
     public async Task<IReadOnlyList<LocalGameProfile>> GetLocalGameProfiles()

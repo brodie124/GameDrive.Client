@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.Windows;
 using GameDrive.ClientV2.Dashboard;
 using GameDrive.ClientV2.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -66,15 +67,10 @@ public class SignInViewModel : ViewModelBase
             return;
         }
 
-        ShowMessageBox(new ShowMessageBoxRequest(
-            Content: "You have successfully signed in.\n\nA new window will now open.",
-            Title: "GameDrive",
-            PrimaryButton: new MessageBoxButtonState("OK", (messageBox, eventArgs) => { messageBox.Close(); }),
-            SecondaryButton: MessageBoxButtonState.CloseButton()
-        ));
-
         // TODO: persist JWT credentials before moving on to the next window
         var dashboardWindow = _serviceProvider.GetRequiredService<DashboardWindow>();
+        Application.Current.MainWindow = dashboardWindow;
+        
         dashboardWindow.Show();
 
         if (RequestClose is null)

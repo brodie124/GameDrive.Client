@@ -63,6 +63,7 @@ public abstract class ViewModelBase : INotifyPropertyChanged
             ButtonRightName = showMessageBoxRequest.PrimaryButton.Text,
             ButtonRightAppearance = showMessageBoxRequest.PrimaryButton.Appearance ?? ControlAppearance.Primary
         };
+        
         messageBox.ButtonRightClick += (object sender, RoutedEventArgs eventArgs) =>
         {
             showMessageBoxRequest.PrimaryButton.ClickHandler((MessageBox)sender, eventArgs);
@@ -115,12 +116,53 @@ public record MessageBoxButtonState(
     bool IsVisible = true
 )
 {
-    public static MessageBoxButtonState CloseButton()
+    private static readonly Action<MessageBox, RoutedEventArgs> EmptyClickAction = (_, _) => { };
+
+    public static MessageBoxButtonState CloseButton(
+        Action<MessageBox, RoutedEventArgs>? clickAction = null, 
+        ControlAppearance controlAppearance = ControlAppearance.Secondary
+    )
     {
         return new MessageBoxButtonState(
             Text: "Close",
-            ClickHandler: (messageBox, _) => messageBox.Close(),
-            Appearance: ControlAppearance.Secondary
+            ClickHandler: clickAction ?? EmptyClickAction,
+            Appearance: controlAppearance
+        );
+    }
+    
+    public static MessageBoxButtonState YesButton(
+        Action<MessageBox, RoutedEventArgs>? clickAction = null, 
+        ControlAppearance controlAppearance = ControlAppearance.Primary
+    )
+    {
+        return new MessageBoxButtonState(
+            Text: "Yes",
+            ClickHandler: clickAction ?? EmptyClickAction,
+            Appearance: controlAppearance
+        );
+    }
+    
+    public static MessageBoxButtonState NoButton(
+        Action<MessageBox, RoutedEventArgs>? clickAction = null, 
+        ControlAppearance controlAppearance = ControlAppearance.Secondary
+    )
+    {
+        return new MessageBoxButtonState(
+            Text: "No",
+            ClickHandler: clickAction ?? EmptyClickAction,
+            Appearance: controlAppearance
+        );
+    }
+
+    public static MessageBoxButtonState CancelButton(
+        Action<MessageBox, RoutedEventArgs>? clickAction = null, 
+        ControlAppearance controlAppearance = ControlAppearance.Secondary
+    )
+    {
+        return new MessageBoxButtonState(
+            Text: "Cancel",
+            ClickHandler: clickAction ?? EmptyClickAction,
+            Appearance: controlAppearance
         );
     }
 }

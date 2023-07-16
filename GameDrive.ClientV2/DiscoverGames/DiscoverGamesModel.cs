@@ -6,5 +6,4 @@ public interface IDiscoverGamesModel
 
 public class DiscoverGamesModel : IDiscoverGamesModel
 {
-    
 }

@@ -4,10 +4,42 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:GameDrive.ClientV2.DiscoverGames"
-        d:DataContext="{x:Type local:DiscoverGamesViewModel}"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        d:DataContext="{d:DesignInstance local:DiscoverGamesViewModel}"
         mc:Ignorable="d"
-        Title="DiscoverGamesWindow" Height="450" Width="800">
+        Background="#2E2C2F"
+        Title="GameDrive  |  Discover Games" 
+        ResizeMode="NoResize"
+        Height="200" 
+        Width="300"
+        Closing="OnClose">
+    <Window.Resources>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="GhostWhite" />
+        </Style>
+    </Window.Resources>
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="Discovering Games" FontSize="32" HorizontalAlignment="Center" />
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="8*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Path=TopStatusText}" HorizontalAlignment="Center" />
+            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Path=BottomStatusText}" HorizontalAlignment="Center" />
+            <ProgressBar Grid.Column="1" Grid.Row="2" Value="{Binding Path=ProgressValue, Mode=OneWay}" Height="20"></ProgressBar>
+        </Grid>
+           
     </Grid>
 </Window>

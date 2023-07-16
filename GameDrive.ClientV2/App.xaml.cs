@@ -2,6 +2,8 @@
 using System.Windows;
 using GameDrive.ClientV2.Dashboard;
 using GameDrive.ClientV2.Domain.API;
+using GameDrive.ClientV2.Domain.Database;
+using GameDrive.ClientV2.Extensions;
 using GameDrive.ClientV2.SignIn;
 using GameDrive.ClientV2.SignIn.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,8 +27,10 @@ public partial class App : Application
     
     private static void ConfigureServices(IServiceCollection serviceCollection)
     {
+        serviceCollection.UseGameDriveSqliteDatabase("gdclient.sqlite");
+        
         serviceCollection.AddSingleton<IGdApi, GdApi>();
-        serviceCollection.AddSingleton<ICredentialProvider, CredentialProvider>();
+        serviceCollection.AddTransient<ICredentialProvider, CredentialProvider>();
         
         serviceCollection.AddTransient<SignInWindow>();
         serviceCollection.AddTransient<SignInViewModel>();
@@ -37,8 +41,11 @@ public partial class App : Application
         serviceCollection.AddTransient<IDashboardModel, DashboardModel>();
     }
 
-    private void OnStartUp(object sender, StartupEventArgs startupEventArgs)
+    private async void OnStartUp(object sender, StartupEventArgs startupEventArgs)
     {
+        var databaseContext = _serviceProvider.GetRequiredService<IGdDatabaseContext>();
+        await databaseContext.CreateDatabaseAsync();
+        
         var signInWindow = _serviceProvider.GetRequiredService<SignInWindow>();
         signInWindow.Show();
     }

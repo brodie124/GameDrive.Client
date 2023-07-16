@@ -15,8 +15,19 @@
 
     <ItemGroup>
       <PackageReference Include="CSharpFunctionalExtensions" Version="2.40.0" />
+      <PackageReference Include="Dapper" Version="2.0.143" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+      <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
       <PackageReference Include="WPF-UI" Version="2.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Domain\Database\SQL\LocalGameProfilesTable.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Domain\Database\SQL\TrackedFilesTable.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

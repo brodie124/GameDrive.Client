@@ -49,10 +49,13 @@ public abstract class ViewModelBase : INotifyPropertyChanged
         }
     }
 
-    protected void ShowMessageBox(
+    protected ShowMessageBoxResult ShowMessageBox(
         ShowMessageBoxRequest showMessageBoxRequest
     )
     {
+        var isPrimaryClicked = false;
+        var isSecondaryClicked = false;
+        
         var messageBox = new MessageBox
         {
             Content = showMessageBoxRequest.Content,
@@ -66,6 +69,7 @@ public abstract class ViewModelBase : INotifyPropertyChanged
         
         messageBox.ButtonRightClick += (object sender, RoutedEventArgs eventArgs) =>
         {
+            isPrimaryClicked = true;
             showMessageBoxRequest.PrimaryButton.ClickHandler((MessageBox)sender, eventArgs);
             messageBox.Close();
         };
@@ -79,12 +83,14 @@ public abstract class ViewModelBase : INotifyPropertyChanged
             messageBox.ButtonLeftName = showMessageBoxRequest.SecondaryButton.Text;
             messageBox.ButtonLeftClick += (sender, eventArgs) =>
             {
+                isSecondaryClicked = true;
                 showMessageBoxRequest.SecondaryButton.ClickHandler((MessageBox)sender, eventArgs);
                 messageBox.Close();
             };
         }
         else
         {
+            isSecondaryClicked = true;
             messageBox.ButtonLeftName = "Close";
             messageBox.ButtonLeftClick += (_, _) => messageBox.Close();
         }
@@ -96,8 +102,14 @@ public abstract class ViewModelBase : INotifyPropertyChanged
             messageBox.ButtonLeftAppearance = ControlAppearance.Transparent;
 
         messageBox.ShowDialog();
+        return new ShowMessageBoxResult(isPrimaryClicked, isSecondaryClicked);
     }
 }
+
+public record ShowMessageBoxResult(
+    bool IsPrimaryClicked,
+    bool IsSecondaryClicked
+);
 
 public record ShowMessageBoxRequest(
     object Content,

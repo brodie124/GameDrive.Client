@@ -45,6 +45,8 @@ public class  TrackedFile : INotifyPropertyChanged
     }
 
     public FileSnapshot? Snapshot { get; private set; }
+    public string? FileHash => Snapshot?.FileHash;
+    public string? MetadataHash => Snapshot?.MetadataHash;
 
     public bool IsFileMissing => Snapshot == null && LastCheckedTime != DateTime.MinValue;
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
@@ -11,7 +12,10 @@ namespace GameDrive.ClientV2.Domain.Database.DataAccess;
 public interface ITrackedFileDataAccess
 {
     Task<Result<List<TrackedFile>>> GetByProfileId(string profileId);
-    Task<Result<TrackedFile>> AddOrUpdateAsync(TrackedFile trackedFile);
+    Task<Result<TrackedFile>> AddOrUpdateAsync(
+        TrackedFile trackedFile,
+        IDbTransaction? transaction = null
+    );
 }
 
 public class TrackedFileDataAccess : ITrackedFileDataAccess
@@ -34,7 +38,10 @@ public class TrackedFileDataAccess : ITrackedFileDataAccess
         return results.ToList();
     }
     
-    public async Task<Result<TrackedFile>> AddOrUpdateAsync(TrackedFile trackedFile)
+    public async Task<Result<TrackedFile>> AddOrUpdateAsync(
+        TrackedFile trackedFile, 
+        IDbTransaction? transaction = null
+    )
     {
         ArgumentNullException.ThrowIfNull(trackedFile.Snapshot?.FileHash);
         ArgumentNullException.ThrowIfNull(trackedFile.Snapshot?.MetadataHash);
@@ -43,7 +50,8 @@ public class TrackedFileDataAccess : ITrackedFileDataAccess
         var affectedRowCount = await connection.ExecuteAsync(
             "INSERT OR REPLACE INTO tracked_files (ProfileId, FilePath, RelativePath, FileHash, MetadataHash, FirstCheckedTime, LastCheckedTime, LastSynchronisedTime) " +
             "VALUES (@ProfileId, @FilePath, @RelativePath, @FileHash, @MetadataHash, @FirstCheckedTime, @LastCheckedTime, @LastSynchronisedTime);",
-            trackedFile
+            trackedFile,
+            transaction
         );
 
         return trackedFile;

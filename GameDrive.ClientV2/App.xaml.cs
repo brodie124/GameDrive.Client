@@ -2,6 +2,7 @@
 using System.Windows;
 using GameDrive.ClientV2.Dashboard;
 using GameDrive.ClientV2.DiscoverGames;
+using GameDrive.ClientV2.DiscoverGames.Services;
 using GameDrive.ClientV2.Domain.API;
 using GameDrive.ClientV2.Domain.Database;
 using GameDrive.ClientV2.Extensions;
@@ -32,6 +33,9 @@ public partial class App : Application
 
         serviceCollection.AddSingleton<IGdApi, GdApi>();
         serviceCollection.AddTransient<ICredentialProvider, CredentialProvider>();
+        serviceCollection.AddTransient<IGameDiscoveryService, GameDiscoveryService>();
+
+        serviceCollection.RegisterGameDriveRepositories();
 
         serviceCollection
             .AddTransient<SignInWindow>()

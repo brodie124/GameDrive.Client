@@ -24,6 +24,8 @@ public static class ServiceCollectionExtensions
         serviceCollection
             .AddTransient<ILocalGameProfileDataAccess, LocalGameProfileDataAccess>()
             .AddTransient<ILocalGameProfileRepository, LocalGameProfileRepository>()
+            .AddTransient<ITrackedFileDataAccess, TrackedFileDataAccess>()
+            .AddTransient<ITrackedFileRepository, TrackedFileRepository>()
             ;
         return serviceCollection;
     }

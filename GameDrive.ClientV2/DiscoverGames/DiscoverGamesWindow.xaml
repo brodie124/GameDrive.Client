@@ -10,21 +10,23 @@
         Background="#2E2C2F"
         Title="GameDrive  |  Discover Games" 
         ResizeMode="NoResize"
-        Height="200" 
-        Width="300"
-        Closing="OnClose">
+        Height="180" 
+        Width="365"
+        Closing="OnClose"
+        Loaded="OnLoaded">
     <Window.Resources>
         <Style TargetType="{x:Type TextBlock}">
             <Setter Property="Foreground" Value="GhostWhite" />
+            <!-- <Setter Property="FontSize" Value="20" /> -->
         </Style>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <!-- <RowDefinition Height="Auto" /> -->
             <RowDefinition />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="Discovering Games" FontSize="32" HorizontalAlignment="Center" />
-        <Grid Grid.Row="1">
+        <!-- <TextBlock Grid.Row="0" Text="Discovering Games" FontSize="32" HorizontalAlignment="Center" /> -->
+        <Grid Grid.Row="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -36,8 +38,14 @@
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
             
-            <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Path=TopStatusText}" HorizontalAlignment="Center" />
-            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Path=BottomStatusText}" HorizontalAlignment="Center" />
+            <TextBlock Grid.Column="1" Grid.Row="0" 
+                       Text="{Binding Path=ActivityStatusText}" 
+                       FontSize="20"
+                       HorizontalAlignment="Center" 
+                       Margin="0, 10, 0, 10" />
+            <TextBlock Grid.Column="1" Grid.Row="1" 
+                       Text="{Binding Path=ProgressStatusText}" HorizontalAlignment="Center"
+                       FontSize="16"/>
             <ProgressBar Grid.Column="1" Grid.Row="2" Value="{Binding Path=ProgressValue, Mode=OneWay}" Height="20"></ProgressBar>
         </Grid>
            

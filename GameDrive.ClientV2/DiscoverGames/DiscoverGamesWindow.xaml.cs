@@ -11,6 +11,8 @@ public partial class DiscoverGamesWindow : Window
     {
         _viewModel = viewModel;
         DataContext = _viewModel;
+
+        _viewModel.RequestClose += Close;
         
         InitializeComponent();
     }
@@ -19,5 +21,10 @@ public partial class DiscoverGamesWindow : Window
     {
         var isUserRequest = sender is not null;
         _viewModel.HandleClose(isUserRequest, e);
+    }
+
+    private async void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        await _viewModel.StartAsync();
     }
 }

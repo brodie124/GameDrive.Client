@@ -19,6 +19,7 @@ public class DashboardViewModel : ViewModelBase
     private List<LocalGameProfile> _localGameProfiles = Array.Empty<LocalGameProfile>().ToList();
     private Dictionary<string, GameObject> _gameObjects = new Dictionary<string, GameObject>();
     private GameObject? _selectedGameObject = null;
+    private bool _isLoadingProfiles = true;
 
     public IReadOnlyList<LocalGameProfile> LocalGameProfiles
     {
@@ -33,6 +34,15 @@ public class DashboardViewModel : ViewModelBase
         get => _selectedGameObject;
         set => SetField(ref _selectedGameObject, value, PropertyChangedUpdateTrigger.All);
     }
+
+    public bool IsLoadingProfiles
+    {
+        get => _isLoadingProfiles;
+        set => SetField(ref _isLoadingProfiles, value, PropertyChangedUpdateTrigger.All);
+    }
+
+    public bool ShowProfilesLoadingSpinner => IsLoadingProfiles;
+    public bool ShowProfilesList => !IsLoadingProfiles;
 
     public DashboardViewModel(
         IServiceProvider serviceProvider,
@@ -67,10 +77,22 @@ public class DashboardViewModel : ViewModelBase
     
     public async Task StartupAsync()
     {
+        IsLoadingProfiles = true;
+        
         // TODO: load in tracked files and do this asynchronously to show a progress bar
         var localProfiles = await _localGameProfileRepository.GetAllAsync();
-        var gameObjects = localProfiles.Select(x => new GameObject(x));
-        SetGameObjects(gameObjects.ToList());
+        var gameObjects = localProfiles
+            .Select(x => new GameObject(x))
+            .ToList();
+
+        foreach (var g in gameObjects)
+        {
+            await g.FindTrackedFilesAsync();
+        }
+        
+        SetGameObjects(gameObjects);
+
+        IsLoadingProfiles = false;
     }
 
     public void SetSelectedProfile(GameObject gameObject)

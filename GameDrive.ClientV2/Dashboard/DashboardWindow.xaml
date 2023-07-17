@@ -46,7 +46,8 @@
                 <ui:ProgressRing IsIndeterminate="True" />
             </Border>
             <Border Grid.Column="0"
-                    Visibility="{Binding ShowProfilesList, Converter={StaticResource BoolToVisibilityConverter}}">
+                    Visibility="{Binding ShowProfilesList, Converter={StaticResource BoolToVisibilityConverter}}"
+                    Margin="20,0,0,0">
                 <ListView ItemsSource="{Binding Path=LocalGameProfiles}" SelectionChanged="OnProfileSelectionChanged"
                           Name="ProfileListView">
                     <ListView.ItemTemplate>

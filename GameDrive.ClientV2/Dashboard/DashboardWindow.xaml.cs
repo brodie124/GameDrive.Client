@@ -1,4 +1,5 @@
 using System.Windows;
+using GameDrive.ClientV2.Domain.Models;
 
 namespace GameDrive.ClientV2.Dashboard;
 
@@ -27,5 +28,17 @@ public partial class DashboardWindow : Window
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         await _viewModel.StartupAsync();
+    }
+
+    private void OnProfileSelectionChanged(object sender, RoutedEventArgs e)
+    {
+        if (ProfileListView.SelectedIndex < 0 || ProfileListView.SelectedIndex >= _viewModel.LocalGameProfiles.Count)
+            return;
+
+        var selectedProfile = _viewModel.LocalGameProfiles[ProfileListView.SelectedIndex];
+        var selectedGameObject = _viewModel.GameObjects[selectedProfile.Id];
+        _viewModel.SelectedGameObject = selectedGameObject;
+        
+        this.SelectedProfileQuickView.GameObject = _viewModel.SelectedGameObject;
     }
 }

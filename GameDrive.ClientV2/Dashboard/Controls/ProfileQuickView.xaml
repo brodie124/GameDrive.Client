@@ -7,7 +7,7 @@
              d:DataContext="{d:DesignInstance local:ProfileQuickViewViewModel}"
              mc:Ignorable="d"
              Background="Transparent"
-             d:DesignHeight="300" 
+             d:DesignHeight="300"
              d:DesignWidth="300">
     <UserControl.Resources>
         <Style TargetType="TextBlock">
@@ -16,23 +16,33 @@
     </UserControl.Resources>
     <DockPanel>
         <TextBlock DockPanel.Dock="Top"
-                   Margin="0,0,0,10" 
+                   Margin="0,0,0,10"
                    FontSize="24"
                    VerticalAlignment="Top"
-                   Text="{Binding ProfileName, TargetNullValue=Select a profile}"/>
-        
+                   Text="{Binding ProfileName, TargetNullValue=Select a profile}" />
+
         <DockPanel DockPanel.Dock="Top">
-            <TextBlock VerticalAlignment="Center" 
-                       Margin="0,0,10,0" 
-                       Text="Save Directory" 
-                       IsEnabled="{Binding IsGameObjectSelected}"/>
-            
-            <TextBox VerticalAlignment="Center" 
-                     IsReadOnly="True" 
+            <TextBlock VerticalAlignment="Center"
+                       Margin="0,0,10,0"
+                       Text="Save Directory"
+                       IsEnabled="{Binding IsGameObjectSelected}" />
+
+            <TextBox VerticalAlignment="Center"
+                     IsReadOnly="True"
                      IsEnabled="{Binding IsGameObjectSelected}"
-                     Text="{Binding ResolvedBaseDirectory, FallbackValue='',  Mode=OneWay}"></TextBox>
+                     Text="{Binding ResolvedBaseDirectory, FallbackValue='',  Mode=OneWay}">
+            </TextBox>
         </DockPanel>
-                    
-        <DataGrid Margin="0,25,0,0"></DataGrid>
+
+        <DataGrid
+            Margin="0,25,0,0"
+            AutoGenerateColumns="False"
+            IsReadOnly="True"
+            ItemsSource="{Binding  GameObject.TrackedFiles}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="File" Width="*" Binding="{Binding RelativePath}" />
+                <!-- <DataGridTextColumn Header="Status" /> -->
+            </DataGrid.Columns>
+        </DataGrid>
     </DockPanel>
 </UserControl>

@@ -67,6 +67,7 @@ public class DashboardViewModel : ViewModelBase
     
     public async Task StartupAsync()
     {
+        // TODO: load in tracked files and do this asynchronously to show a progress bar
         var localProfiles = await _localGameProfileRepository.GetAllAsync();
         var gameObjects = localProfiles.Select(x => new GameObject(x));
         SetGameObjects(gameObjects.ToList());

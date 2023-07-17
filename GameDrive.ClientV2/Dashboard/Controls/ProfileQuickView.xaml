@@ -33,6 +33,6 @@
                      Text="{Binding ResolvedBaseDirectory, FallbackValue='',  Mode=OneWay}"></TextBox>
         </DockPanel>
                     
-        <DataGrid Margin="0,25,0,0" IsEnabled="{Binding IsGameObjectSelected}"></DataGrid>
+        <DataGrid Margin="0,25,0,0"></DataGrid>
     </DockPanel>
 </UserControl>

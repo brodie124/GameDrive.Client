@@ -12,7 +12,7 @@ public class GdApi : Singleton<GdApi>, IGdApi
     public GdApi()
     {
         // TODO: come up with solution for switching between production/development urls
-        var url = "http://gamedrive.brodiepestell.net/";
+        var url = "https://gamedrive.brodiepestell.net/";
         // url = "https://localhost:44378/";
         _gdHttpHelper = new GdHttpHelper(url);
         Authentication = new GdAuthenticationApi(_gdHttpHelper);

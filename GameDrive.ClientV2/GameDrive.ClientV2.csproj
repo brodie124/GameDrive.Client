@@ -31,7 +31,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="CommonUi\" />
       <Folder Include="Dashboard\Services\" />
     </ItemGroup>
 

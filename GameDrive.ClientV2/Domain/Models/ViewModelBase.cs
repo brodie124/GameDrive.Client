@@ -25,9 +25,19 @@ public abstract class ViewModelBase : INotifyPropertyChanged
         PropertyChangedUpdateTrigger updateChangedTrigger = PropertyChangedUpdateTrigger.NamedProperty,
         [CallerMemberName] string? propertyName = null)
     {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        if (EqualityComparer<T>.Default.Equals(field, value)) 
+            return false;
         field = value;
 
+        TriggerPropertyUpdate(updateChangedTrigger, propertyName);
+        return true;
+    }
+
+    protected virtual void TriggerPropertyUpdate(
+        PropertyChangedUpdateTrigger updateChangedTrigger,
+        string? propertyName = null
+    )
+    {
         switch (updateChangedTrigger)
         {
             case PropertyChangedUpdateTrigger.All:
@@ -38,12 +48,11 @@ public abstract class ViewModelBase : INotifyPropertyChanged
 
                 foreach (var siblingPropertyName in siblingPropertyNames)
                     OnPropertyChanged(siblingPropertyName);
-
-                OnPropertyChanged();
-                return true;
+                break;
             case PropertyChangedUpdateTrigger.NamedProperty:
+                ArgumentNullException.ThrowIfNull(propertyName);
                 OnPropertyChanged(propertyName);
-                return true;
+                break;
             default:
                 throw new NotImplementedException();
         }

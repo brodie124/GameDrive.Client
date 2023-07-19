@@ -1,5 +1,5 @@
 using System.Windows;
-using GameDrive.ClientV2.Domain.Models;
+using GameDrive.ClientV2.Domain.Status;
 
 namespace GameDrive.ClientV2.Dashboard;
 
@@ -28,6 +28,7 @@ public partial class DashboardWindow : Window
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         await _viewModel.StartupAsync();
+        DashboardAppStatus.DataContext = _viewModel.GetAppStatusViewModel();
     }
 
     private void OnProfileSelectionChanged(object sender, RoutedEventArgs e)
@@ -45,5 +46,15 @@ public partial class DashboardWindow : Window
     private void OnSynchronisedClicked(object sender, RoutedEventArgs e)
     {
         // TODO: implement synchronisation
+    }
+
+    private async void OnCreateProfileClicked(object sender, RoutedEventArgs e)
+    {
+        await _viewModel.TestPublishUpdate(new StatusUpdate()
+        {
+            Title = "Test 1",
+            Message = "I am some message (not closable)...",
+            IsClosable = false
+        });
     }
 }

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Windows;
 using GameDrive.ClientV2.Dashboard;
+using GameDrive.ClientV2.Dashboard.Controls.AppStatus;
 using GameDrive.ClientV2.DiscoverGames;
 using GameDrive.ClientV2.DiscoverGames.Services;
-using GameDrive.ClientV2.Domain.API;
 using GameDrive.ClientV2.Domain.Database;
+using GameDrive.ClientV2.Domain.Status;
 using GameDrive.ClientV2.Extensions;
 using GameDrive.ClientV2.SignIn;
 using GameDrive.ClientV2.SignIn.Services;
@@ -39,6 +40,9 @@ public partial class App : Application
             );
 
         serviceCollection
+            .AddSingleton<IStatusService, StatusService>();
+
+        serviceCollection
             .AddTransient<ICredentialProvider, CredentialProvider>()
             .AddTransient<IGameDiscoveryService, GameDiscoveryService>();
 
@@ -56,6 +60,9 @@ public partial class App : Application
             .AddTransient<DiscoverGamesWindow>()
             .AddTransient<DiscoverGamesViewModel>()
             .AddTransient<IDiscoverGamesModel, DiscoverGamesModel>();
+
+        serviceCollection
+            .AddTransient<AppStatusViewModel>();
     }
 
     private async void OnStartUp(object sender, StartupEventArgs startupEventArgs)

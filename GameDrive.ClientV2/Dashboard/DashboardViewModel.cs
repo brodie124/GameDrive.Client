@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GameDrive.ClientV2.Dashboard.Controls.AppStatus;
 using GameDrive.ClientV2.DiscoverGames;
 using GameDrive.ClientV2.Domain.Database.Repositories;
 using GameDrive.ClientV2.Domain.Models;
+using GameDrive.ClientV2.Domain.Status;
 using GameDrive.ClientV2.SignIn;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +17,7 @@ public class DashboardViewModel : ViewModelBase
     private readonly IServiceProvider _serviceProvider;
     private readonly IDashboardModel _model;
     private readonly ILocalGameProfileRepository _localGameProfileRepository;
+    private readonly IStatusService _statusService;
 
     private List<LocalGameProfile> _localGameProfiles = Array.Empty<LocalGameProfile>().ToList();
     private Dictionary<string, GameObject> _gameObjects = new Dictionary<string, GameObject>();
@@ -47,12 +50,14 @@ public class DashboardViewModel : ViewModelBase
     public DashboardViewModel(
         IServiceProvider serviceProvider,
         IDashboardModel model,
-        ILocalGameProfileRepository localGameProfileRepository
+        ILocalGameProfileRepository localGameProfileRepository,
+        IStatusService statusService
     )
     {
         _serviceProvider = serviceProvider;
         _model = model;
         _localGameProfileRepository = localGameProfileRepository;
+        _statusService = statusService;
     }
 
     public async Task ScanForGames()
@@ -98,6 +103,18 @@ public class DashboardViewModel : ViewModelBase
     public void SetSelectedProfile(GameObject gameObject)
     {
         SelectedGameObject = gameObject;
+    }
+
+    public async Task TestPublishUpdate(StatusUpdate statusUpdate)
+    {
+        _statusService.PublishUpdate(statusUpdate);
+        await Task.Delay(5000);
+        _statusService.DismissUpdate(statusUpdate);
+    }
+
+    public AppStatusViewModel GetAppStatusViewModel()
+    {
+        return _serviceProvider.GetRequiredService<AppStatusViewModel>();
     }
 
     private void SetGameObjects(List<GameObject> gameObjects)

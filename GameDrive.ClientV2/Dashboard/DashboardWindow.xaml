@@ -9,6 +9,7 @@
         xmlns:converters="clr-namespace:GameDrive.ClientV2.CommonUi.Converters"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:profileQuickView="clr-namespace:GameDrive.ClientV2.Dashboard.Controls.ProfileQuickView"
+        xmlns:appStatus="clr-namespace:GameDrive.ClientV2.Dashboard.Controls.AppStatus"
         d:DataContext="{d:DesignInstance local:DashboardViewModel}"
         mc:Ignorable="d"
         Title="Game Drive  |  Dashboard" Height="450" Width="800"
@@ -27,6 +28,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Menu Grid.Row="0">
@@ -38,8 +40,10 @@
                 <MenuItem Header="Exit" Click="OnMenuExitClicked" Command="ApplicationCommands.Close" IsEnabled="true" />
             </MenuItem>
         </Menu>
+        
+        <appStatus:AppStatusControl Grid.Row="1" x:Name="DashboardAppStatus" />
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="4*" />
                 <ColumnDefinition Width="8*" />
@@ -54,7 +58,9 @@
                        Margin="20,0,0,0">
                 <Border DockPanel.Dock="Top"
                         Margin="0,10,0,10">
-                    <Button HorizontalAlignment="Center" ToolTipService.ToolTip="Create a game profile">
+                    <Button HorizontalAlignment="Center" 
+                            ToolTipService.ToolTip="Create a game profile"
+                            Click="OnCreateProfileClicked">
                         <ui:SymbolIcon Symbol="Add28" FontSize="28"></ui:SymbolIcon>
                     </Button>
 

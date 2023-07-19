@@ -35,4 +35,12 @@
       <Folder Include="Dashboard\Services\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Page Update="Dashboard\Controls\ProfileQuickView\ProfileQuickView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+    </ItemGroup>
+
 </Project>

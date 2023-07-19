@@ -1,7 +1,7 @@
 using GameDrive.ClientV2.Domain.Models;
 using GameDrive.ClientV2.SignIn;
 
-namespace GameDrive.ClientV2.Dashboard.Controls;
+namespace GameDrive.ClientV2.Dashboard.Controls.ProfileQuickView;
 
 public class ProfileQuickViewViewModel : ViewModelBase
 {

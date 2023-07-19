@@ -8,6 +8,7 @@
         xmlns:localControls="clr-namespace:GameDrive.ClientV2.Dashboard.Controls"
         xmlns:converters="clr-namespace:GameDrive.ClientV2.CommonUi.Converters"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:profileQuickView="clr-namespace:GameDrive.ClientV2.Dashboard.Controls.ProfileQuickView"
         d:DataContext="{d:DesignInstance local:DashboardViewModel}"
         mc:Ignorable="d"
         Title="Game Drive  |  Dashboard" Height="450" Width="800"
@@ -78,7 +79,7 @@
                 </ListView>
             </DockPanel>
             <Border Grid.Column="1" Margin="20,20,20,20">
-                <localControls:ProfileQuickView x:Name="SelectedProfileQuickView" />
+                <profileQuickView:ProfileQuickView x:Name="SelectedProfileQuickView" />
             </Border>
         </Grid>
     </Grid>

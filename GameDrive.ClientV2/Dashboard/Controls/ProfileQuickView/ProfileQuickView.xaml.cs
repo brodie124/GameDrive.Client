@@ -2,7 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using GameDrive.ClientV2.Domain.Models;
 
-namespace GameDrive.ClientV2.Dashboard.Controls;
+namespace GameDrive.ClientV2.Dashboard.Controls.ProfileQuickView;
 
 public partial class ProfileQuickView : UserControl
 {

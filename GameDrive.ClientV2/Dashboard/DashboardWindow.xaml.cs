@@ -41,4 +41,9 @@ public partial class DashboardWindow : Window
         
         this.SelectedProfileQuickView.GameObject = _viewModel.SelectedGameObject;
     }
+
+    private void OnSynchronisedClicked(object sender, RoutedEventArgs e)
+    {
+        // TODO: implement synchronisation
+    }
 }

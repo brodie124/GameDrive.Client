@@ -29,13 +29,18 @@ public partial class App : Application
 
     private static void ConfigureServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.UseGameDriveSqliteDatabase("gdclient.sqlite");
+        const bool useProdApi = true;
+        serviceCollection
+            .UseGameDriveSqliteDatabase("gdclient.sqlite")
+            .RegisterGameDriveRepositories()
+            .RegisterGameDriveApi(useProdApi
+                ? "https://gamedrive.brodiepestell.net/"
+                : "https://localhost:44378/"
+            );
 
-        serviceCollection.AddSingleton<IGdApi, GdApi>();
-        serviceCollection.AddTransient<ICredentialProvider, CredentialProvider>();
-        serviceCollection.AddTransient<IGameDiscoveryService, GameDiscoveryService>();
-
-        serviceCollection.RegisterGameDriveRepositories();
+        serviceCollection
+            .AddTransient<ICredentialProvider, CredentialProvider>()
+            .AddTransient<IGameDiscoveryService, GameDiscoveryService>();
 
         serviceCollection
             .AddTransient<SignInWindow>()

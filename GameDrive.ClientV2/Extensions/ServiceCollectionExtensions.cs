@@ -1,3 +1,4 @@
+using GameDrive.ClientV2.Domain.API;
 using GameDrive.ClientV2.Domain.Database;
 using GameDrive.ClientV2.Domain.Database.DataAccess;
 using GameDrive.ClientV2.Domain.Database.Repositories;
@@ -14,6 +15,15 @@ public static class ServiceCollectionExtensions
     {
         serviceCollection.AddSingleton<IGdDatabaseContext, GdLocalClientDatabaseContext>(
             serviceProvider => new GdLocalClientDatabaseContext(fileName));
+        return serviceCollection;
+    }
+
+    public static IServiceCollection RegisterGameDriveApi(
+        this IServiceCollection serviceCollection,
+        string url
+    )
+    {
+        serviceCollection.AddSingleton<IGdApi, GdApi>(serviceProvider => new GdApi(url));
         return serviceCollection;
     }
 

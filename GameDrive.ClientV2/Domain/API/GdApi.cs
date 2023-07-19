@@ -2,18 +2,15 @@
 
 namespace GameDrive.ClientV2.Domain.API;
 
-public class GdApi : Singleton<GdApi>, IGdApi
+public class GdApi : IGdApi
 {
     private GdHttpHelper _gdHttpHelper;
     public IGdAuthenticationApi Authentication { get; }
     public IGdManifestApi Manifest { get; }
     public IGdFileApi File { get; }
 
-    public GdApi()
+    public GdApi(string url)
     {
-        // TODO: come up with solution for switching between production/development urls
-        var url = "https://gamedrive.brodiepestell.net/";
-        // url = "https://localhost:44378/";
         _gdHttpHelper = new GdHttpHelper(url);
         Authentication = new GdAuthenticationApi(_gdHttpHelper);
         Manifest = new GdManifestApi(_gdHttpHelper);

@@ -4,16 +4,49 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:GameDrive.ClientV2.Dashboard.Controls.AppStatus"
+             xmlns:converters="clr-namespace:GameDrive.ClientV2.CommonUi.Converters"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignInstance local:AppStatusViewModel}"
              Background="Transparent">
-    <DockPanel Margin="10">
-        <ui:InfoBar
-                    Title="{Binding Title}" 
-                    Message="{Binding Message}" 
-                    IsOpen="{Binding HasStatusUpdate}" 
-                    IsClosable="{Binding IsClosable}"/>
-    </DockPanel>
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <Style TargetType="DockPanel">
+            <Setter Property="Border.CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+            <Setter Property="Background">
+                <Setter.Value>
+                    <SolidColorBrush Color="{DynamicResource ControlFillColorDefault}"></SolidColorBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    <Border 
+            Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+            Background="{DynamicResource ControlFillColorDefaultBrush}" 
+            CornerRadius="{DynamicResource ControlCornerRadius}"
+            Padding="0, 10, 10, 10"
+            Margin="0, 0, 0, 10">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            
+            <Border Grid.Column="0" Padding="10, 0">
+                <ui:SymbolIcon HorizontalAlignment="Center" 
+                               FontSize="24"
+                               Symbol="Info28" />
+            </Border>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0" Text="{Binding Title}" />
+                <TextBlock Grid.Row="1" Text="{Binding Message}" />
+            </Grid>
+        </Grid>
+    </Border>
 </UserControl>

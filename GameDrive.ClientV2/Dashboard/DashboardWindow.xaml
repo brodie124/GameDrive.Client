@@ -31,17 +31,19 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Menu Grid.Row="0">
+        <Menu Grid.Row="0" Margin="0, 0,0, 10">
             <MenuItem Header="_File">
-                <MenuItem Header="Scan for games" Click="OnMenuScanForGamesClicked" IsEnabled="true" />
+                <MenuItem Header="Scan for games" Click="OnMenuScanForGamesClicked" />
                 <Separator />
-                <MenuItem Header="Synchronise" Click="OnSynchronisedClicked" IsEnabled="true" />
+                <MenuItem Header="Synchronise" Click="OnSynchronisedClicked" />
                 <Separator />
-                <MenuItem Header="Exit" Click="OnMenuExitClicked" Command="ApplicationCommands.Close" IsEnabled="true" />
+                <MenuItem Header="Exit" Click="OnMenuExitClicked" />
             </MenuItem>
         </Menu>
-        
-        <appStatus:AppStatusControl Grid.Row="1" x:Name="DashboardAppStatus" />
+
+        <appStatus:AppStatusControl Grid.Row="1"
+                                    x:Name="DashboardAppStatus"
+                                    Margin="10, 0"/>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
@@ -58,7 +60,8 @@
                        Margin="20,0,0,0">
                 <Border DockPanel.Dock="Top"
                         Margin="0,0,0,10">
-                    <Button HorizontalAlignment="Center" 
+                    <!-- "Create a game profile" button -->
+                    <Button HorizontalAlignment="Center"
                             ToolTipService.ToolTip="Create a game profile"
                             Click="OnCreateProfileClicked">
                         <ui:SymbolIcon Symbol="Add28" FontSize="28"></ui:SymbolIcon>

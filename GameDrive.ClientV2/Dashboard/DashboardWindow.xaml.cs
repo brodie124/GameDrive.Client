@@ -13,6 +13,7 @@ public partial class DashboardWindow : Window
         DataContext = _viewModel;
         
         InitializeComponent();
+        DashboardAppStatus.DataContext = _viewModel.GetAppStatusViewModel();
     }
 
     private async void OnMenuScanForGamesClicked(object sender, RoutedEventArgs e)
@@ -28,7 +29,6 @@ public partial class DashboardWindow : Window
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         await _viewModel.StartupAsync();
-        DashboardAppStatus.DataContext = _viewModel.GetAppStatusViewModel();
     }
 
     private void OnProfileSelectionChanged(object sender, RoutedEventArgs e)

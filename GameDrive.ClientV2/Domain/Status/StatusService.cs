@@ -5,8 +5,10 @@ namespace GameDrive.ClientV2.Domain.Status;
 
 public interface IStatusService
 {
-    public delegate void UpdatePublished(UpdatePublishedEventArgs args);
-    public event UpdatePublished? OnUpdatePublished;
+    delegate void UpdatePublished(UpdatePublishedEventArgs args);
+    delegate void UpdateStatusChanged(UpdatePublishedEventArgs args);
+    event UpdatePublished? OnUpdatePublished;
+    event UpdateStatusChanged? OnUpdateStatusChanged;
     StatusUpdate? LatestStatusUpdate { get; }
     void PublishUpdate(StatusUpdate statusUpdate);
     bool DismissUpdate(StatusUpdate statusUpdate);
@@ -15,13 +17,16 @@ public interface IStatusService
 public class StatusService : IStatusService
 {
     public event IStatusService.UpdatePublished? OnUpdatePublished;
+    public event IStatusService.UpdateStatusChanged? OnUpdateStatusChanged;
     private readonly List<StatusUpdate> _statusUpdates = new List<StatusUpdate>();
     public StatusUpdate? LatestStatusUpdate => _statusUpdates.LastOrDefault();
     public IReadOnlyList<StatusUpdate> StatusUpdates => _statusUpdates;
 
     public void PublishUpdate(StatusUpdate statusUpdate)
     {
+        statusUpdate.PropertyChanged += (_, _) => OnUpdateStatusChanged?.Invoke(new UpdatePublishedEventArgs(statusUpdate));
         _statusUpdates.Add(statusUpdate);
+        
         OnUpdatePublished?.Invoke(new UpdatePublishedEventArgs(statusUpdate));
     }
     

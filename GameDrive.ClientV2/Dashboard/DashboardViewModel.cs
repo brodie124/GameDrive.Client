@@ -107,8 +107,18 @@ public class DashboardViewModel : ViewModelBase
 
     public async Task TestPublishUpdate(StatusUpdate statusUpdate)
     {
+        statusUpdate.ShowProgressBar = true;
+        statusUpdate.ProgressValue = 0;
         _statusService.PublishUpdate(statusUpdate);
-        await Task.Delay(5000);
+
+        var delayTime = 10000 / 100;
+        for (var i = 0; i < 100; i++)
+        {
+            statusUpdate.ProgressValue += (int) Math.Ceiling(100f / 500f);
+            await Task.Delay(delayTime);
+        }
+        
+        
         _statusService.DismissUpdate(statusUpdate);
     }
 

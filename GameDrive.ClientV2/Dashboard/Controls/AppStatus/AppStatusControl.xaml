@@ -45,7 +45,15 @@
                 </Grid.RowDefinitions>
                 
                 <TextBlock Grid.Row="0" Text="{Binding Title}" />
-                <TextBlock Grid.Row="1" Text="{Binding Message}" />
+                <StackPanel Grid.Row="1">
+                    <TextBlock Text="{Binding Message}" />
+                    <ProgressBar 
+                        Visibility="{Binding ShowProgressBar, Converter={StaticResource BoolToVisibilityConverter}}"
+                        Value="{Binding ProgressBarValue, Mode=OneWay}" 
+                        Minimum="{Binding ProgressBarMin, Mode=OneWay}"
+                        Maximum="{Binding ProgressBarMax, Mode=OneWay}" />
+                </StackPanel>
+                
             </Grid>
         </Grid>
     </Border>

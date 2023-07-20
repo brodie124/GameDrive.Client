@@ -15,7 +15,7 @@
         ResizeMode="NoResize"
         Background="#2E2C2F">
     <Window.Resources>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"></converters:BoolToVisibilityConverter>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
     <Grid>
         <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="250"

@@ -3,9 +3,18 @@
 
 GameDrive is a self-hosted file-synchronisation tool oriented towards video game save files, and is designed to mimic the simplicity of [Steam Cloud](https://partner.steamgames.com/doc/features/cloud) (without being limited to Steam games).
 
+This tool **is not** a fully-fledged backup solution. It is not designed to keep snapshots of saves for X amount of
+days and to then allow you to restore these individual snapshots.
+
+Instead, GameDrive is designed to make it as easy as possible to synchronise game saves between multiple machines.
+Because of this, GameDrive makes a local backup of all game saves that are overwritten with versions from the cloud,
+and a conflict detection regime has been created to request user input whenever the system is uncertain of whether a 
+file should be uploaded/downloaded/removed altogether.
+
+
 ## How it works
 ### Architecture
-![](/Docs/Images/ServerClientRelationshipDiagram.png)
+![Architecture Diagram](/Docs/Images/ServerClientRelationshipDiagram.png)
 
 The application as a whole consists of two key components: [GameDrive.Client](https://github.com/brodie124/GameDrive.Client) and [GameDrive.Server](https://github.com/brodie124/GameDrive.Server).
 

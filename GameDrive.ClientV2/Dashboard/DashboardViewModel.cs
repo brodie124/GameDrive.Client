@@ -84,18 +84,34 @@ public class DashboardViewModel : ViewModelBase
     {
         IsLoadingProfiles = true;
         
-        // TODO: load in tracked files and do this asynchronously to show a progress bar
+        const string statusUpdateBaseText = "We're currently identifying your game saves.\nThis process may take several minutes.";
+        var statusUpdate = new StatusUpdate()
+        {
+            Title = "Tracking files",
+            Message = statusUpdateBaseText,
+            ShowProgressBar = true
+        };
+        
+        _statusService.PublishUpdate(statusUpdate);
+        
         var localProfiles = await _localGameProfileRepository.GetAllAsync();
         var gameObjects = localProfiles
             .Select(x => new GameObject(x))
             .ToList();
 
+        var counter = 0;
+        var total = gameObjects.Count;
         foreach (var g in gameObjects)
         {
+            var progress = (int) Math.Floor(((float) counter / total) * 100);
+            statusUpdate.ProgressValue = progress;
+            statusUpdate.Message = $"{statusUpdateBaseText}\n\nLoaded {counter + 1} / {total} game profiles.";
             await g.FindTrackedFilesAsync();
+            counter++;
         }
         
         SetGameObjects(gameObjects);
+        _statusService.DismissUpdate(statusUpdate);
 
         IsLoadingProfiles = false;
     }

@@ -37,15 +37,15 @@ public partial class DashboardWindow : Window
             return;
 
         var selectedProfile = _viewModel.LocalGameProfiles[ProfileListView.SelectedIndex];
-        var selectedGameObject = _viewModel.GameObjects[selectedProfile.Id];
+        var selectedGameObject = _viewModel.GetGameObjectByProfileId(selectedProfile.Id);
         _viewModel.SelectedGameObject = selectedGameObject;
         
-        this.SelectedProfileQuickView.GameObject = _viewModel.SelectedGameObject;
+        SelectedProfileQuickView.GameObject = _viewModel.SelectedGameObject;
     }
 
-    private void OnSynchronisedClicked(object sender, RoutedEventArgs e)
+    private async void OnSynchronisedClicked(object sender, RoutedEventArgs e)
     {
-        // TODO: implement synchronisation
+        await _viewModel.SynchroniseAsync();
     }
 
     private async void OnCreateProfileClicked(object sender, RoutedEventArgs e)

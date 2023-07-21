@@ -6,6 +6,7 @@ using GameDrive.ClientV2.DiscoverGames;
 using GameDrive.ClientV2.DiscoverGames.Services;
 using GameDrive.ClientV2.Domain.Database;
 using GameDrive.ClientV2.Domain.Status;
+using GameDrive.ClientV2.Domain.Synchronisation;
 using GameDrive.ClientV2.Extensions;
 using GameDrive.ClientV2.SignIn;
 using GameDrive.ClientV2.SignIn.Services;
@@ -40,7 +41,9 @@ public partial class App : Application
             );
 
         serviceCollection
-            .AddSingleton<IStatusService, StatusService>();
+            .AddSingleton<IStatusService, StatusService>()
+            .AddSingleton<ISynchronisationService, SynchronisationService>()
+            .AddSingleton<IFileTrackingService, FileTrackingService>();
 
         serviceCollection
             .AddTransient<ICredentialProvider, CredentialProvider>()

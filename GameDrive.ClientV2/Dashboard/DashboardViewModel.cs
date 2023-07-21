@@ -7,6 +7,7 @@ using GameDrive.ClientV2.DiscoverGames;
 using GameDrive.ClientV2.Domain.Database.Repositories;
 using GameDrive.ClientV2.Domain.Models;
 using GameDrive.ClientV2.Domain.Status;
+using GameDrive.ClientV2.Domain.Synchronisation;
 using GameDrive.ClientV2.SignIn;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,19 +19,15 @@ public class DashboardViewModel : ViewModelBase
     private readonly IDashboardModel _model;
     private readonly ILocalGameProfileRepository _localGameProfileRepository;
     private readonly IStatusService _statusService;
-
-    private List<LocalGameProfile> _localGameProfiles = Array.Empty<LocalGameProfile>().ToList();
-    private Dictionary<string, GameObject> _gameObjects = new Dictionary<string, GameObject>();
+    private readonly ISynchronisationService _synchronisationService;
+    private readonly IFileTrackingService _fileTrackingService;
+    
     private GameObject? _selectedGameObject = null;
     private bool _isLoadingProfiles = true;
 
-    public IReadOnlyList<LocalGameProfile> LocalGameProfiles
-    {
-        get => _localGameProfiles;
-        private set => SetField(ref _localGameProfiles, value.ToList());
-    }
-    
-    public Dictionary<string, GameObject> GameObjects => _gameObjects;
+    public IReadOnlyList<LocalGameProfile> LocalGameProfiles => _fileTrackingService.GameObjects
+                                                                    .Select(x => x.Profile)
+                                                                    .ToList();
 
     public GameObject? SelectedGameObject
     {
@@ -51,13 +48,17 @@ public class DashboardViewModel : ViewModelBase
         IServiceProvider serviceProvider,
         IDashboardModel model,
         ILocalGameProfileRepository localGameProfileRepository,
-        IStatusService statusService
+        IStatusService statusService,
+        ISynchronisationService synchronisationService,
+        IFileTrackingService fileTrackingService
     )
     {
         _serviceProvider = serviceProvider;
         _model = model;
         _localGameProfileRepository = localGameProfileRepository;
         _statusService = statusService;
+        _synchronisationService = synchronisationService;
+        _fileTrackingService = fileTrackingService;
     }
 
     public async Task ScanForGames()
@@ -77,7 +78,7 @@ public class DashboardViewModel : ViewModelBase
         discoverGamesWindow.ShowDialog();
 
         var gameObjects = discoverGamesWindow.DiscoveredGameObjects;
-        SetGameObjects(gameObjects.ToList());
+        _fileTrackingService.AddGameObjects(gameObjects);
     }
     
     public async Task StartupAsync()
@@ -99,27 +100,22 @@ public class DashboardViewModel : ViewModelBase
         var gameObjects = localProfiles
             .Select(x => new GameObject(x))
             .ToList();
-
-        var counter = 0;
-        var total = gameObjects.Count;
-        foreach (var g in gameObjects)
-        {
-            var progress = (int) Math.Floor(((float) counter / total) * 100);
-            statusUpdate.ProgressValue = progress;
-            statusUpdate.Message = $"{statusUpdateBaseText}\n\nLoaded {counter + 1} / {total} game profiles.";
-            await g.FindTrackedFilesAsync();
-            counter++;
-        }
         
-        SetGameObjects(gameObjects);
+        _fileTrackingService.AddGameObjects(gameObjects);
+        await _fileTrackingService.TrackFilesAsync((int scanned, int total) =>
+        {
+            var progress = (int) Math.Floor(((float) scanned / total) * 100);
+            statusUpdate.ProgressValue = progress;
+            statusUpdate.Message = $"{statusUpdateBaseText}\n\nLoaded {scanned + 1} / {total} game profiles.";
+        });
+        
         _statusService.DismissUpdate(statusUpdate);
-
         IsLoadingProfiles = false;
     }
 
-    public void SetSelectedProfile(GameObject gameObject)
+    public GameObject? GetGameObjectByProfileId(string profileId)
     {
-        SelectedGameObject = gameObject;
+        return _fileTrackingService.GameObjects.FirstOrDefault(x => x.Profile.Id == profileId);
     }
 
     public async Task TestPublishUpdate(StatusUpdate statusUpdate)
@@ -144,14 +140,8 @@ public class DashboardViewModel : ViewModelBase
         return _serviceProvider.GetRequiredService<AppStatusViewModel>();
     }
 
-    private void SetGameObjects(List<GameObject> gameObjects)
+    public async Task SynchroniseAsync()
     {
-        _gameObjects.Clear();
-        foreach (var gameObject in gameObjects)
-        {
-            _gameObjects.Add(gameObject.Profile.Id, gameObject);
-        }
-
-        LocalGameProfiles = gameObjects.Select(x => x.Profile).ToList();
+        // _synchronisationService.Synchronise();
     }
 }

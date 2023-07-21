@@ -45,18 +45,19 @@
                                     x:Name="DashboardAppStatus"
                                     Margin="10, 0"/>
 
-        <Grid Grid.Row="2">
+        <Border Grid.Row="2"
+                Visibility="{Binding ShowProfilesLoadingSpinner, Converter={StaticResource BoolToVisibilityConverter}}">
+            <ui:ProgressRing IsIndeterminate="True" />
+        </Border>
+        
+        <Grid Grid.Row="2" 
+              Visibility="{Binding ShowProfilesList, Converter={StaticResource BoolToVisibilityConverter}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="4*" />
                 <ColumnDefinition Width="8*" />
             </Grid.ColumnDefinitions>
-
-            <Border Grid.Column="0"
-                    Visibility="{Binding ShowProfilesLoadingSpinner, Converter={StaticResource BoolToVisibilityConverter}}">
-                <ui:ProgressRing IsIndeterminate="True" />
-            </Border>
+            
             <DockPanel Grid.Column="0"
-                       Visibility="{Binding ShowProfilesList, Converter={StaticResource BoolToVisibilityConverter}}"
                        Margin="20,0,0,0">
                 <Border DockPanel.Dock="Top"
                         Margin="0,0,0,10">
@@ -87,7 +88,7 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </DockPanel>
-            <Border Grid.Column="1" Margin="20,20,20,20">
+            <Border Grid.Column="1" Margin="20,20,20,20" Visibility="{Binding ShowProfilesList, Converter={StaticResource BoolToVisibilityConverter}}">
                 <profileQuickView:ProfileQuickView x:Name="SelectedProfileQuickView" />
             </Border>
         </Grid>

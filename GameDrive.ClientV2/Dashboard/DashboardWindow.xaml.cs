@@ -54,7 +54,7 @@ public partial class DashboardWindow : Window
         {
             Title = "Test 1",
             Message = "I am some message (not closable)...",
-            IsClosable = false
+            IsClosable = true
         });
     }
 }

@@ -7,16 +7,16 @@ namespace GameDrive.ClientV2.Dashboard.Controls.AppStatus;
 public class AppStatusViewModel : ViewModelBase
 {  
     private readonly IStatusService _statusService;
-    public bool IsVisible => _statusService.LatestStatusUpdate?.IsVisible ?? false;
-    public string Title => _statusService.LatestStatusUpdate?.Title ?? string.Empty;
-    public string Message => _statusService.LatestStatusUpdate?.Message ?? string.Empty;
-    public bool IsClosable => _statusService.LatestStatusUpdate?.IsClosable ?? true;
+    public bool IsVisible => _statusService.ActiveStatusUpdate?.IsVisible ?? false;
+    public string Title => _statusService.ActiveStatusUpdate?.Title ?? string.Empty;
+    public string Message => _statusService.ActiveStatusUpdate?.Message ?? string.Empty;
+    public bool IsClosable => _statusService.ActiveStatusUpdate?.IsClosable ?? true;
     
     // TODO: Tidy up the progress-related variables
-    public bool ShowProgressBar => _statusService.LatestStatusUpdate?.ShowProgressBar ?? false;
-    public int ProgressBarValue => _statusService.LatestStatusUpdate?.ProgressValue ?? 0;
-    public int ProgressBarMin => _statusService.LatestStatusUpdate?.ProgressMin ?? 0;
-    public int ProgressBarMax => _statusService.LatestStatusUpdate?.ProgressMax ?? 0;
+    public bool ShowProgressBar => _statusService.ActiveStatusUpdate?.ShowProgressBar ?? false;
+    public int ProgressBarValue => _statusService.ActiveStatusUpdate?.ProgressValue ?? 0;
+    public int ProgressBarMin => _statusService.ActiveStatusUpdate?.ProgressMin ?? 0;
+    public int ProgressBarMax => _statusService.ActiveStatusUpdate?.ProgressMax ?? 0;
 
     public AppStatusViewModel(IStatusService statusService)
     {
@@ -33,5 +33,13 @@ public class AppStatusViewModel : ViewModelBase
     private void StatusServiceOnUpdatePublished(UpdatePublishedEventArgs args)
     {
         TriggerPropertyUpdate(PropertyChangedUpdateTrigger.All);
+    }
+
+    public void Close()
+    {
+        if (_statusService.ActiveStatusUpdate is null)
+            return;
+        
+        _statusService.DismissUpdate(_statusService.ActiveStatusUpdate);
     }
 }

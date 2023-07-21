@@ -9,7 +9,7 @@ public interface IStatusService
     delegate void UpdateStatusChanged(UpdatePublishedEventArgs args);
     event UpdatePublished? OnUpdatePublished;
     event UpdateStatusChanged? OnUpdateStatusChanged;
-    StatusUpdate? LatestStatusUpdate { get; }
+    StatusUpdate? ActiveStatusUpdate { get; }
     void PublishUpdate(StatusUpdate statusUpdate);
     bool DismissUpdate(StatusUpdate statusUpdate);
 }
@@ -19,7 +19,7 @@ public class StatusService : IStatusService
     public event IStatusService.UpdatePublished? OnUpdatePublished;
     public event IStatusService.UpdateStatusChanged? OnUpdateStatusChanged;
     private readonly List<StatusUpdate> _statusUpdates = new List<StatusUpdate>();
-    public StatusUpdate? LatestStatusUpdate => _statusUpdates.LastOrDefault();
+    public StatusUpdate? ActiveStatusUpdate => _statusUpdates.FirstOrDefault(x => !x.IsRemoved);
     public IReadOnlyList<StatusUpdate> StatusUpdates => _statusUpdates;
 
     public void PublishUpdate(StatusUpdate statusUpdate)

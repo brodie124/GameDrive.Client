@@ -12,14 +12,6 @@
              Background="Transparent">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <Style TargetType="DockPanel">
-            <Setter Property="Border.CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
-            <Setter Property="Background">
-                <Setter.Value>
-                    <SolidColorBrush Color="{DynamicResource ControlFillColorDefault}"></SolidColorBrush>
-                </Setter.Value>
-            </Setter>
-        </Style>
     </UserControl.Resources>
     <Border 
             Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}}"
@@ -34,6 +26,7 @@
             </Grid.ColumnDefinitions>
             
             <Border Grid.Column="0" Padding="20, 0">
+                <!-- Icon -->
                 <ui:SymbolIcon HorizontalAlignment="Center" 
                                FontSize="24"
                                Symbol="Info28" />
@@ -44,18 +37,36 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 
-                <TextBlock 
-                    Grid.Row="0" 
-                    FontSize="18"
-                    Text="{Binding Title}" />
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- Title -->
+                    <TextBlock Grid.Column="0"
+                               FontSize="18"
+                               Text="{Binding Title}" />
+                    
+                    <!-- Close Button -->
+                    <Button Grid.Column="1"
+                            Click="OnCloseStatusClicked"
+                            Visibility="{Binding IsClosable, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <ui:SymbolIcon Symbol="Dismiss28" />
+                    </Button>
+                </Grid>
+                
                 <StackPanel Grid.Row="1">
+                    <!-- Message -->
                     <TextBlock 
                         Text="{Binding Message}"
                         FontSize="14" />
+                    
+                    <!-- Progress Bar -->
                     <ProgressBar 
                         Visibility="{Binding ShowProgressBar, Converter={StaticResource BoolToVisibilityConverter}}"
                         Margin="0, 10, 0, 0"
-                        Value="{Binding ProgressBarValue, Mode=OneWay}" 
+                        Value="{Binding ProgressBarValue, Mode=OneWay}"
                         Minimum="{Binding ProgressBarMin, Mode=OneWay}"
                         Maximum="{Binding ProgressBarMax, Mode=OneWay}" />
                 </StackPanel>

@@ -89,6 +89,7 @@ public class DashboardViewModel : ViewModelBase
         {
             Title = "Tracking files",
             Message = statusUpdateBaseText,
+            IsClosable = false,
             ShowProgressBar = true
         };
         

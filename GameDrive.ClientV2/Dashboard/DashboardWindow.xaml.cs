@@ -52,6 +52,7 @@ public partial class DashboardWindow : Window
     {
         await _viewModel.TestPublishUpdate(new StatusUpdate()
         {
+            Type = StatusType.Error,
             Title = "Test 1",
             Message = "I am some message (not closable)...",
             IsClosable = true

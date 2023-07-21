@@ -8,6 +8,7 @@ public class AppStatusViewModel : ViewModelBase
 {  
     private readonly IStatusService _statusService;
     public bool IsVisible => _statusService.ActiveStatusUpdate?.IsVisible ?? false;
+    public StatusType Type => _statusService.ActiveStatusUpdate?.Type ?? StatusType.Informational;
     public string Title => _statusService.ActiveStatusUpdate?.Title ?? string.Empty;
     public string Message => _statusService.ActiveStatusUpdate?.Message ?? string.Empty;
     public bool IsClosable => _statusService.ActiveStatusUpdate?.IsClosable ?? true;

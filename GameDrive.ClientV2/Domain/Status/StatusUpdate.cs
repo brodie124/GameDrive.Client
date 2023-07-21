@@ -22,6 +22,8 @@ public class StatusUpdate : NotifyPropertyChanged
     }
     public bool IsVisible => !IsRemoved;
 
+    public StatusType Type { get; set; } = StatusType.Informational;
+    
     public string Title
     {
         get => _title;

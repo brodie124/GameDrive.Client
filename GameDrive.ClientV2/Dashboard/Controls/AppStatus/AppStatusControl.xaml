@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:GameDrive.ClientV2.Dashboard.Controls.AppStatus"
              xmlns:converters="clr-namespace:GameDrive.ClientV2.CommonUi.Converters"
+             xmlns:localConverters="clr-namespace:GameDrive.ClientV2.Dashboard.Controls.AppStatus.Converters"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
@@ -12,42 +13,46 @@
              Background="Transparent">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <localConverters:StatusTypeToSymbolBackgroundConverter x:Key="StatusTypeToSymbolBackgroundConverter" />
+        <localConverters:StatusTypeToSymbolForegroundConverter x:Key="StatusTypeToSymbolForegroundConverter" />
+        <localConverters:StatusTypeToSymbolIconConverter x:Key="StatusTypeToSymbolIconConverter" />
     </UserControl.Resources>
-    <Border 
-            Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-            Background="{DynamicResource ControlFillColorDefaultBrush}" 
-            CornerRadius="{DynamicResource ControlCornerRadius}"
-            Padding="0, 20, 20, 20"
-            Margin="0, 0, 0, 10">
+    <Border
+        Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+        Background="{Binding Type, Converter={StaticResource StatusTypeToSymbolBackgroundConverter}}"
+        CornerRadius="{DynamicResource ControlCornerRadius}"
+        Padding="0, 20, 20, 20"
+        Margin="0, 0, 0, 10">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            
+
             <Border Grid.Column="0" Padding="20, 0">
                 <!-- Icon -->
-                <ui:SymbolIcon HorizontalAlignment="Center" 
+                <ui:SymbolIcon HorizontalAlignment="Center"
                                FontSize="24"
-                               Symbol="Info28" />
+                               Foreground="{Binding Type, Converter={StaticResource StatusTypeToSymbolForegroundConverter}}"
+                               Symbol="{Binding Type, Converter={StaticResource StatusTypeToSymbolIconConverter}}" />
             </Border>
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                
+
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    
+
                     <!-- Title -->
                     <TextBlock Grid.Column="0"
                                FontSize="18"
                                Text="{Binding Title}" />
-                    
+
                     <!-- Close Button -->
                     <Button Grid.Column="1"
                             Click="OnCloseStatusClicked"
@@ -55,22 +60,22 @@
                         <ui:SymbolIcon Symbol="Dismiss28" />
                     </Button>
                 </Grid>
-                
+
                 <StackPanel Grid.Row="1">
                     <!-- Message -->
-                    <TextBlock 
+                    <TextBlock
                         Text="{Binding Message}"
                         FontSize="14" />
-                    
+
                     <!-- Progress Bar -->
-                    <ProgressBar 
+                    <ProgressBar
                         Visibility="{Binding ShowProgressBar, Converter={StaticResource BoolToVisibilityConverter}}"
                         Margin="0, 10, 0, 0"
                         Value="{Binding ProgressBarValue, Mode=OneWay}"
                         Minimum="{Binding ProgressBarMin, Mode=OneWay}"
                         Maximum="{Binding ProgressBarMax, Mode=OneWay}" />
                 </StackPanel>
-                
+
             </Grid>
         </Grid>
     </Border>

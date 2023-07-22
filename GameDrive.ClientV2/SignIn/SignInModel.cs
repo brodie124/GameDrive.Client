@@ -21,7 +21,9 @@ public class SignInModel  : ISignInModel
             return Result.Failure<JwtCredential>(signInResult.Error);
         }
 
-        return signInResult.Value;
+        var credentials = signInResult.Value;
+        _credentialProvider.PersistCredentials(credentials);
+        return credentials;
     }
 }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using GameDrive.ClientV2.SignIn.Services;
 
 namespace GameDrive.ClientV2.Domain.API;
 
@@ -17,9 +18,9 @@ public class GdApi : IGdApi
         File = new GdFileApi(_gdHttpHelper);
     }
 
-    public void SetJwt(string? token)
+    public void SetJwtCredentials(JwtCredential? credentials)
     {
-        _gdHttpHelper.JwtToken = token;
+        _gdHttpHelper.JwtToken = credentials?.Token;
     }
 
 }
@@ -29,6 +30,8 @@ public interface IGdApi
     IGdAuthenticationApi Authentication { get; }
     IGdManifestApi Manifest { get; }
     IGdFileApi File { get; }
+
+    void SetJwtCredentials(JwtCredential? credential);
 }
 
 public abstract class GdApiHandler

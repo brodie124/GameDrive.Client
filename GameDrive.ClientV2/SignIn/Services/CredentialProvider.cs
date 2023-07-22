@@ -7,11 +7,15 @@ namespace GameDrive.ClientV2.SignIn.Services;
 public interface ICredentialProvider
 {
     Task<Result<JwtCredential>> GetJwtCredentials(string username, string password);
+
+    void PersistCredentials(JwtCredential jwtCredential);
+    void ExpireCredentials();
 }
 
 public class CredentialProvider : ICredentialProvider 
 {
     private readonly IGdApi _gdApi;
+    private JwtCredential? _jwtCredential;
 
     public CredentialProvider(IGdApi gdApi)
     {
@@ -28,6 +32,17 @@ public class CredentialProvider : ICredentialProvider
         }
         
         return new JwtCredential(response.Data);
+    }
+
+    public void PersistCredentials(JwtCredential jwtCredential)
+    {
+        _jwtCredential = jwtCredential;
+        _gdApi.SetJwtCredentials(_jwtCredential); // IGdApi is a singleton, so the JWT data will be persisted in memory.
+    }
+
+    public void ExpireCredentials()
+    {
+        _jwtCredential = null;
     }
 }
 

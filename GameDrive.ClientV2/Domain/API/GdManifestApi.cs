@@ -1,4 +1,14 @@
-﻿namespace GameDrive.ClientV2.Domain.API;
+﻿using System;
+using System.Threading.Tasks;
+using GameDrive.Server.Domain.Models;
+using GameDrive.Server.Domain.Models.Responses;
+
+namespace GameDrive.ClientV2.Domain.API;
+
+public interface IGdManifestApi
+{
+    Task<ApiResponse<CompareManifestResponse>> CompareManifest(GameProfileManifest manifest);
+}
 
 public class GdManifestApi : GdApiHandler, IGdManifestApi
 {
@@ -6,12 +16,17 @@ public class GdManifestApi : GdApiHandler, IGdManifestApi
     {
     }
 
-    // public async ValueTask<ApiResponse<List<ManifestFileReport>>> CompareManifest(FileManifest fileManifest)
-    // {
-    //     return await GdHttpHelper.HttpPost<List<ManifestFileReport>, FileManifest>($"Manifest/Compare", fileManifest);
-    // }
-}
-
-public interface IGdManifestApi
-{
+    public async Task<ApiResponse<CompareManifestResponse>> CompareManifest(GameProfileManifest manifest)
+    {
+        try
+        {
+            return await GdHttpHelper.HttpPost<CompareManifestResponse, GameProfileManifest>($"Manifest/Compare",
+                manifest);
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse<CompareManifestResponse>.Failure(ex,
+                "An exception occurred whilst fetching the manifest comparison.");
+        }
+    }
 }

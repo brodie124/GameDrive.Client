@@ -142,6 +142,6 @@ public class DashboardViewModel : ViewModelBase
 
     public async Task SynchroniseAsync()
     {
-        // _synchronisationService.Synchronise();
+        await _synchronisationService.SynchroniseAsync();
     }
 }

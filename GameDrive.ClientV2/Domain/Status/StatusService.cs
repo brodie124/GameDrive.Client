@@ -10,7 +10,7 @@ public interface IStatusService
     event UpdatePublished? OnUpdatePublished;
     event UpdateStatusChanged? OnUpdateStatusChanged;
     StatusUpdate? ActiveStatusUpdate { get; }
-    void PublishUpdate(StatusUpdate statusUpdate);
+    StatusUpdate PublishUpdate(StatusUpdate statusUpdate);
     bool DismissUpdate(StatusUpdate statusUpdate);
 }
 
@@ -22,12 +22,13 @@ public class StatusService : IStatusService
     public StatusUpdate? ActiveStatusUpdate => _statusUpdates.FirstOrDefault(x => !x.IsRemoved);
     public IReadOnlyList<StatusUpdate> StatusUpdates => _statusUpdates;
 
-    public void PublishUpdate(StatusUpdate statusUpdate)
+    public StatusUpdate PublishUpdate(StatusUpdate statusUpdate)
     {
         statusUpdate.PropertyChanged += (_, _) => OnUpdateStatusChanged?.Invoke(new UpdatePublishedEventArgs(statusUpdate));
         _statusUpdates.Add(statusUpdate);
         
         OnUpdatePublished?.Invoke(new UpdatePublishedEventArgs(statusUpdate));
+        return statusUpdate;
     }
     
     public bool DismissUpdate(StatusUpdate statusUpdate)

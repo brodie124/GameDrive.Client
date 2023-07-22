@@ -40,6 +40,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0">
@@ -76,6 +77,22 @@
                         Maximum="{Binding ProgressBarMax, Mode=OneWay}" />
                 </StackPanel>
 
+                <StackPanel Grid.Row="2"
+                            Orientation="Horizontal" HorizontalAlignment="Right"
+                            Margin="0, 10, 0, 0">
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="Margin" Value="10, 0 ,0,0"  />
+                        </Style>
+                    </StackPanel.Resources>
+                    <Border>
+                        <ui:Button>OK</ui:Button>
+                    </Border>
+                    <Border>
+                        <ui:Button>Cancel</ui:Button>
+                    </Border>
+                    
+                </StackPanel>
             </Grid>
         </Grid>
     </Border>

@@ -47,8 +47,8 @@ public class SynchronisationService : ISynchronisationService
             IsClosable = false
         });
         
-        var manifestComparisons = await FetchManifestComparisonsAsync();
-        if (manifestComparisons.IsFailure)
+        var manifestComparisonsResult = await FetchManifestComparisonsAsync();
+        if (manifestComparisonsResult.IsFailure)
         {
             statusUpdate.Type = StatusType.Error;
             statusUpdate.Title = "Failed to synchronise";
@@ -58,6 +58,24 @@ public class SynchronisationService : ISynchronisationService
         }
         
         // TODO: add notification (warning) for presence of conflicts
+        var manifestComparisons = manifestComparisonsResult.Value;
+        var conflictCount =
+            manifestComparisons
+                .Values
+                .Count(
+                    x => x.Entries.Any(y => y.DiffState == FileDiffState.Conflict)
+                );
+
+        if (conflictCount > 0)
+        {
+            // TODO: update this status update to use buttons (continue, cancel)
+            statusUpdate.Type = StatusType.Warning;
+            statusUpdate.Title = "Conflicts detected";
+            statusUpdate.Message = $"{conflictCount} game profiles have conflicts.\n\n" +
+                                   $"Please view the profile(s) to resolve the conflicts and then try again.";
+            statusUpdate.IsClosable = true;
+            return;
+        }
         
         statusUpdate.Title = $"({StepText(currentStep++)}) Synchronising";
         statusUpdate.Message = "Something else...";

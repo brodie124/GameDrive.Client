@@ -40,20 +40,24 @@ public class SynchronisationService : ISynchronisationService
         var totalSteps = 4;
         string StepText(int step) => $"{step} / {totalSteps}";
 
-        var statusUpdate = _statusService.PublishUpdate(new StatusUpdate()
-        {
-            Title = $"({StepText(currentStep++)}) Synchronising",
-            Message = "We are comparing your save data with the data stored in the cloud.\n\nThis process may take several minutes.",
-            IsClosable = false
-        });
+        var statusUpdate = _statusService.PublishUpdate(
+            StatusUpdateBuilder.Start()
+                .IsClosable(false)
+                .WithTitle($"({StepText(currentStep++)}) Synchronising")
+                .WithMessage("We are comparing your save data with the data stored in the cloud.\n\nThis process may take several minutes.")
+                .Build()
+            );
         
         var manifestComparisonsResult = await FetchManifestComparisonsAsync();
         if (manifestComparisonsResult.IsFailure)
         {
-            statusUpdate.Type = StatusType.Error;
-            statusUpdate.Title = "Failed to synchronise";
-            statusUpdate.Message = "An error occurred whilst synchronising with the cloud. Please try again later.";
-            statusUpdate.IsClosable = true;
+            StatusUpdateBuilder.Start()
+                .IsClosable(true)
+                .WithType(StatusType.Error)
+                .WithTitle("Failed to synchronise")
+                .WithMessage("An error occurred whilst synchronising with the cloud. Please try again later.")
+                .Build()
+                .CopyInto(statusUpdate);
             return;
         }
         
@@ -69,11 +73,14 @@ public class SynchronisationService : ISynchronisationService
         if (conflictCount > 0)
         {
             // TODO: update this status update to use buttons (continue, cancel)
-            statusUpdate.Type = StatusType.Warning;
-            statusUpdate.Title = "Conflicts detected";
-            statusUpdate.Message = $"{conflictCount} game profiles have conflicts.\n\n" +
-                                   $"Please view the profile(s) to resolve the conflicts and then try again.";
-            statusUpdate.IsClosable = true;
+            StatusUpdateBuilder.Start()
+                .IsClosable(true)
+                .WithType(StatusType.Warning)
+                .WithTitle("Conflicts detected")
+                .WithMessage($"{conflictCount} game profiles have conflicts.\n\n" +
+                             $"Please view the profile(s) to resolve the conflicts and then try again.")
+                .Build()
+                .CopyInto(statusUpdate);
             return;
         }
         

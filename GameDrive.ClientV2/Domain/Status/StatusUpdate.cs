@@ -82,4 +82,17 @@ public class StatusUpdate : NotifyPropertyChanged
     {
         return Id.GetHashCode();
     }
+
+    public void CopyInto(StatusUpdate dest)
+    {
+        dest.IsRemoved = IsRemoved;
+        dest.Type = Type;
+        dest.Title = Title;
+        dest.Message = Message;
+        dest.IsClosable = IsClosable;
+        dest.ShowProgressBar = ShowProgressBar;
+        dest.ProgressValue = ProgressValue;
+        dest.ProgressMin = ProgressMin;
+        dest.ProgressMax = ProgressMax;
+    }
 }

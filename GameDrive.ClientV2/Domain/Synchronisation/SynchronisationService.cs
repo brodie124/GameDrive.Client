@@ -83,9 +83,26 @@ public class SynchronisationService : ISynchronisationService
                 .CopyInto(statusUpdate);
             return;
         }
-        
+
+        // The following is test code to visually show the total size of the uploads requested
+        var uploadSum = 0f;
+        foreach (var (gameObject, manifestComparison) in manifestComparisons)
+        {
+            var trackedFiles = manifestComparison.Entries
+                .Where(y => y.UploadState == FileUploadState.UploadRequested)
+                .Select(x => _fileTrackingService.GameObjects
+                    .First(y => y.Profile.Id == gameObject.Profile.Id)
+                    .TrackedFiles
+                    .First(y => y.RelativePath == x.ClientRelativePath)
+                );
+
+            var gameObjectUploadSize = trackedFiles.Sum(x => x.Snapshot?.FileSize ?? 0);
+            uploadSum += gameObjectUploadSize;
+        }
+
+        uploadSum /= (1024 * 1024); // B -> MB
         statusUpdate.Title = $"({StepText(currentStep++)}) Synchronising";
-        statusUpdate.Message = "Something else...";
+        statusUpdate.Message = $"{uploadSum}MB worth of game saves are to be uploaded.";
 
         await Task.Delay(5000);
         _statusService.DismissUpdate(statusUpdate);

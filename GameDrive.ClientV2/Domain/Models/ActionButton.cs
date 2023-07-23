@@ -7,15 +7,15 @@ namespace GameDrive.ClientV2.Domain.Models;
 
 public record ActionButton(
     string Text,
-    Action<MessageBox, RoutedEventArgs> ClickHandler,
+    Action<object, EventArgs> ClickHandler,
     ControlAppearance? Appearance = null,
     bool IsVisible = true
 )
 {
-    private static readonly Action<MessageBox, RoutedEventArgs> EmptyClickAction = (_, _) => { };
+    private static readonly Action<object, EventArgs> EmptyClickAction = (_, _) => { };
 
     public static ActionButton CloseButton(
-        Action<MessageBox, RoutedEventArgs>? clickAction = null, 
+        Action<object, EventArgs>? clickAction = null, 
         ControlAppearance controlAppearance = ControlAppearance.Secondary
     )
     {
@@ -27,7 +27,7 @@ public record ActionButton(
     }
     
     public static ActionButton YesButton(
-        Action<MessageBox, RoutedEventArgs>? clickAction = null, 
+        Action<object, EventArgs>? clickAction = null, 
         ControlAppearance controlAppearance = ControlAppearance.Primary
     )
     {
@@ -39,7 +39,7 @@ public record ActionButton(
     }
     
     public static ActionButton NoButton(
-        Action<MessageBox, RoutedEventArgs>? clickAction = null, 
+        Action<object, EventArgs>? clickAction = null, 
         ControlAppearance controlAppearance = ControlAppearance.Secondary
     )
     {
@@ -51,7 +51,7 @@ public record ActionButton(
     }
 
     public static ActionButton CancelButton(
-        Action<MessageBox, RoutedEventArgs>? clickAction = null, 
+        Action<object, EventArgs>? clickAction = null, 
         ControlAppearance controlAppearance = ControlAppearance.Secondary
     )
     {

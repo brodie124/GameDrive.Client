@@ -61,7 +61,7 @@ public class SignInViewModel : ViewModelBase
             ShowMessageBox(new ShowMessageBoxRequest(
                 Content: "An invalid username/password combination was provided",
                 Title: "GameDrive",
-                PrimaryButton: new ActionButton("OK", (messageBox, eventArgs) => { messageBox.Close(); }),
+                PrimaryButton: new ActionButton("OK", MapToMessageBoxAction((messageBox, _) => { messageBox.Close(); })),
                 SecondaryButton: ActionButton.CloseButton()
             ));
             return;
@@ -79,6 +79,7 @@ public class SignInViewModel : ViewModelBase
         RequestClose();
     }
 }
+
 
 public enum PropertyChangedUpdateTrigger
 {

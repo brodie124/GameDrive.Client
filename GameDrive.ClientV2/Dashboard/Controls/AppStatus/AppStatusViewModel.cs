@@ -21,10 +21,10 @@ public class AppStatusViewModel : ViewModelBase
 
     public bool ShowActionButtons => _statusService.ActiveStatusUpdate?.ShowActionButtons ?? false;
 
-    private ActionButton PrimaryActionButton =>
+    public ActionButton PrimaryActionButton =>
         _statusService.ActiveStatusUpdate?.PrimaryActionButton ?? ActionButton.InvisibleButton();
     
-    private ActionButton SecondaryActionButton =>
+    public ActionButton SecondaryActionButton =>
         _statusService.ActiveStatusUpdate?.SecondaryActionButton ?? ActionButton.InvisibleButton();
 
     public AppStatusViewModel(IStatusService statusService)

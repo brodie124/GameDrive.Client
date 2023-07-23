@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using Wpf.Ui.Common;
 using MessageBox = Wpf.Ui.Controls.MessageBox;
@@ -60,6 +61,17 @@ public abstract class ViewModelBase : NotifyPropertyChanged
 
         messageBox.ShowDialog();
         return new ShowMessageBoxResult(isPrimaryClicked, isSecondaryClicked);
+    }
+    
+    protected Action<object, EventArgs> MapToMessageBoxAction(Action<MessageBox, RoutedEventArgs> action)
+    {
+        return (sender, args) =>
+        {
+            if (sender is not MessageBox messageBox || args is not RoutedEventArgs routedEventArgs)
+                return;
+
+            action(messageBox, routedEventArgs);
+        };
     }
 }
 

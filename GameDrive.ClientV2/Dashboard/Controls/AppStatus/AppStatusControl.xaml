@@ -86,11 +86,15 @@
                             <Setter Property="Margin" Value="10, 0 ,0,0"  />
                         </Style>
                     </StackPanel.Resources>
-                    <Border>
-                        <ui:Button>OK</ui:Button>
+                    <Border Visibility="{Binding SecondaryActionButton.IsVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <ui:Button
+                            Content="{Binding SecondaryActionButton.Text}" 
+                            Appearance="{Binding SecondaryActionButton.Appearance}" />
                     </Border>
-                    <Border>
-                        <ui:Button>Cancel</ui:Button>
+                    <Border Visibility="{Binding PrimaryActionButton.IsVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <ui:Button 
+                            Content="{Binding PrimaryActionButton.Text}"
+                            Appearance="{Binding PrimaryActionButton.Appearance}" />
                     </Border>
                     
                 </StackPanel>

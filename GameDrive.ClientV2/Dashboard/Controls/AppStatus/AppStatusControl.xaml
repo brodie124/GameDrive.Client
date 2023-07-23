@@ -79,7 +79,8 @@
 
                 <StackPanel Grid.Row="2"
                             Orientation="Horizontal" HorizontalAlignment="Right"
-                            Margin="0, 10, 0, 0">
+                            Margin="0, 10, 0, 0"
+                            Visibility="{Binding ShowActionButtons, Converter={StaticResource BoolToVisibilityConverter}}">
                     <StackPanel.Resources>
                         <Style TargetType="{x:Type Border}">
                             <Setter Property="Margin" Value="10, 0 ,0,0"  />

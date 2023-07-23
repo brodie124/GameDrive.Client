@@ -1,4 +1,5 @@
 using System;
+using GameDrive.ClientV2.Domain.Models;
 
 namespace GameDrive.ClientV2.Domain.Status;
 
@@ -12,6 +13,10 @@ public class StatusUpdate : NotifyPropertyChanged
     private int _progressValue = 0;
     private int _progressMin = 0;
     private int _progressMax = 100;
+
+    private bool _showActionButtons = false;
+    private ActionButton? _primaryActionButton;
+    private ActionButton? _secondaryActionButton;
     
     public Guid Id { get; } = Guid.NewGuid();
 
@@ -63,6 +68,24 @@ public class StatusUpdate : NotifyPropertyChanged
     {
         get => _progressMax;
         set => SetField(ref _progressMax, value);
+    }
+
+    public bool ShowActionButtons
+    {
+        get => _showActionButtons;
+        set => SetField(ref _showActionButtons, value);
+    }
+    
+    public ActionButton? PrimaryActionButton
+    {
+        get => _primaryActionButton;
+        set => SetField(ref _primaryActionButton, value);
+    }
+    
+    public ActionButton? SecondaryActionButton
+    {
+        get => _secondaryActionButton;
+        set => SetField(ref _secondaryActionButton, value);
     }
 
     protected bool Equals(StatusUpdate other)

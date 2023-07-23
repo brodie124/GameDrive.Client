@@ -19,6 +19,14 @@ public class AppStatusViewModel : ViewModelBase
     public int ProgressBarMin => _statusService.ActiveStatusUpdate?.ProgressMin ?? 0;
     public int ProgressBarMax => _statusService.ActiveStatusUpdate?.ProgressMax ?? 0;
 
+    public bool ShowActionButtons => _statusService.ActiveStatusUpdate?.ShowActionButtons ?? false;
+
+    private ActionButton PrimaryActionButton =>
+        _statusService.ActiveStatusUpdate?.PrimaryActionButton ?? ActionButton.InvisibleButton();
+    
+    private ActionButton SecondaryActionButton =>
+        _statusService.ActiveStatusUpdate?.SecondaryActionButton ?? ActionButton.InvisibleButton();
+
     public AppStatusViewModel(IStatusService statusService)
     {
         _statusService = statusService;

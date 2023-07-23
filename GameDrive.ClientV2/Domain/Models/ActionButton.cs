@@ -61,4 +61,14 @@ public record ActionButton(
             Appearance: controlAppearance
         );
     }
+    
+    public static ActionButton InvisibleButton()
+    {
+        return new ActionButton(
+            Text: "Invisible",
+            ClickHandler: EmptyClickAction,
+            Appearance: ControlAppearance.Transparent,
+            IsVisible: false
+        );
+    }
 }

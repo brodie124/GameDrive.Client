@@ -48,7 +48,9 @@ public class StatusUpdateBuilder
 
     public StatusUpdate Build()
     {
-        return _statusUpdate;
+        var statusUpdateClone = new StatusUpdate();
+        _statusUpdate.CopyInto(statusUpdateClone);
+        return statusUpdateClone;
     }
 
     public static StatusUpdateBuilder Start()

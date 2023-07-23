@@ -85,17 +85,15 @@ public class DashboardViewModel : ViewModelBase
     {
         IsLoadingProfiles = true;
         
-        const string statusUpdateBaseText = "We're currently identifying your game saves.\nThis process may take several minutes.";
-        var statusUpdate = new StatusUpdate()
-        {
-            Title = "Tracking files",
-            Message = statusUpdateBaseText,
-            IsClosable = false,
-            ShowProgressBar = true
-        };
-        
-        _statusService.PublishUpdate(statusUpdate);
-        
+        const string statusUpdateBaseText = "We're currently identifying your game saves.\n" +
+                                            "This process may take several minutes.";
+        var statusUpdateBuilder = StatusUpdateBuilder.Start()
+            .IsClosable(false)
+            .WithTitle("Tracking files")
+            .WithMessage(statusUpdateBaseText)
+            .WithProgress(0);
+        var statusUpdate = _statusService.PublishUpdate(statusUpdateBuilder.Build());
+
         var localProfiles = await _localGameProfileRepository.GetAllAsync();
         var gameObjects = localProfiles
             .Select(x => new GameObject(x))
@@ -105,8 +103,11 @@ public class DashboardViewModel : ViewModelBase
         await _fileTrackingService.TrackFilesAsync((int scanned, int total) =>
         {
             var progress = (int) Math.Floor(((float) scanned / total) * 100);
-            statusUpdate.ProgressValue = progress;
-            statusUpdate.Message = $"{statusUpdateBaseText}\n\nLoaded {scanned + 1} / {total} game profiles.";
+            statusUpdateBuilder
+                .WithProgress(progress)
+                .WithMessage($"{statusUpdateBaseText}\n\nLoaded {scanned + 1} / {total} game profiles.")
+                .Build()
+                .CopyInto(statusUpdate);
         });
         
         _statusService.DismissUpdate(statusUpdate);

@@ -1,7 +1,5 @@
 using System;
-using System.Windows;
 using Wpf.Ui.Common;
-using MessageBox = Wpf.Ui.Controls.MessageBox;
 
 namespace GameDrive.ClientV2.Domain.Models;
 

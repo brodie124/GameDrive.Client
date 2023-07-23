@@ -117,5 +117,8 @@ public class StatusUpdate : NotifyPropertyChanged
         dest.ProgressValue = ProgressValue;
         dest.ProgressMin = ProgressMin;
         dest.ProgressMax = ProgressMax;
+        dest.ShowActionButtons = ShowActionButtons;
+        dest.PrimaryActionButton = PrimaryActionButton;
+        dest.SecondaryActionButton = _secondaryActionButton;
     }
 }

@@ -1,4 +1,5 @@
 using System.Windows;
+using GameDrive.ClientV2.Domain.Models;
 using GameDrive.ClientV2.Domain.Status;
 
 namespace GameDrive.ClientV2.Dashboard;
@@ -50,12 +51,17 @@ public partial class DashboardWindow : Window
 
     private async void OnCreateProfileClicked(object sender, RoutedEventArgs e)
     {
-        await _viewModel.TestPublishUpdate(new StatusUpdate()
-        {
-            Type = StatusType.Error,
-            Title = "Test 1",
-            Message = "I am some message (not closable)...",
-            IsClosable = true
-        });
+        await _viewModel.TestPublishUpdate(
+            StatusUpdateBuilder.Start()
+                .IsClosable(true)
+                .WithType(StatusType.Error)
+                .WithTitle("Test 1")
+                .WithMessage("I am some message (not closable)...")
+                .WithActionButtons(
+                    primaryActionButton: ActionButton.YesButton(),
+                    secondaryActionButton: ActionButton.NoButton()
+                )
+                .Build()    
+        );
     }
 }

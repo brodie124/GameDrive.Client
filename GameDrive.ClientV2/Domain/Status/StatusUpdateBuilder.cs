@@ -1,3 +1,5 @@
+using GameDrive.ClientV2.Domain.Models;
+
 namespace GameDrive.ClientV2.Domain.Status;
 
 public class StatusUpdateBuilder
@@ -46,6 +48,17 @@ public class StatusUpdateBuilder
         return this;
     }
 
+    public StatusUpdateBuilder WithActionButtons(
+        ActionButton? primaryActionButton, 
+        ActionButton? secondaryActionButton = null
+    )
+    {
+        _statusUpdate.ShowActionButtons = true;
+        _statusUpdate.PrimaryActionButton = primaryActionButton;
+        _statusUpdate.SecondaryActionButton = secondaryActionButton;
+        return this;
+    }
+    
     public StatusUpdate Build()
     {
         var statusUpdateClone = new StatusUpdate();

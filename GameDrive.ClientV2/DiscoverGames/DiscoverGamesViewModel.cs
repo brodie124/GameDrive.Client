@@ -58,8 +58,8 @@ public class DiscoverGamesViewModel : ViewModelBase
             Content: "Closing this window will cancel the game discovery process and all progress made so far will be lost.\n\n" +
                      "Are you sure you wish to close this window?",
             Title: "GameDrive",
-            PrimaryButton: MessageBoxButtonState.YesButton(),
-            SecondaryButton: MessageBoxButtonState.CancelButton()
+            PrimaryButton: ActionButton.YesButton(),
+            SecondaryButton: ActionButton.CancelButton()
         ));
         
         if(!messageBoxResult.IsPrimaryClicked)

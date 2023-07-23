@@ -61,8 +61,8 @@ public class SignInViewModel : ViewModelBase
             ShowMessageBox(new ShowMessageBoxRequest(
                 Content: "An invalid username/password combination was provided",
                 Title: "GameDrive",
-                PrimaryButton: new MessageBoxButtonState("OK", (messageBox, eventArgs) => { messageBox.Close(); }),
-                SecondaryButton: MessageBoxButtonState.CloseButton()
+                PrimaryButton: new ActionButton("OK", (messageBox, eventArgs) => { messageBox.Close(); }),
+                SecondaryButton: ActionButton.CloseButton()
             ));
             return;
         }

@@ -67,8 +67,8 @@ public class DashboardViewModel : ViewModelBase
             Content: "This process will re-discover ALL games and may take several minutes to complete.\n\n" +
                      "Are you sure you wish to proceed?",
             Title: "GameDrive",
-            PrimaryButton: MessageBoxButtonState.YesButton(),
-            SecondaryButton: MessageBoxButtonState.CancelButton()
+            PrimaryButton: ActionButton.YesButton(),
+            SecondaryButton: ActionButton.CancelButton()
         ));
 
         if (!messageBoxResult.IsPrimaryClicked)

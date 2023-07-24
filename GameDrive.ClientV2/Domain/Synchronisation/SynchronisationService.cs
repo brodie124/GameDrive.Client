@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,16 +23,19 @@ public class SynchronisationService : ISynchronisationService
     private readonly IGdApi _gdApi;
     private readonly IStatusService _statusService;
     private readonly IFileTrackingService _fileTrackingService;
+    private readonly IFileTransferService _fileTransferService;
 
     public SynchronisationService(
         IGdApi gdApi,
         IStatusService statusService,
-        IFileTrackingService fileTrackingService
+        IFileTrackingService fileTrackingService,
+        IFileTransferService fileTransferService
     )
     {
         _gdApi = gdApi;
         _statusService = statusService;
         _fileTrackingService = fileTrackingService;
+        _fileTransferService = fileTransferService;
     }
     
     public async Task SynchroniseAsync()
@@ -65,7 +69,7 @@ public class SynchronisationService : ISynchronisationService
         var manifestComparisons = manifestComparisonsResult.Value;
         var conflictCount =
             manifestComparisons
-                .Values
+                .Select(x => x.CloudManifest)
                 .Count(
                     x => x.Entries.Any(y => y.DiffState == FileDiffState.Conflict)
                 );
@@ -86,12 +90,12 @@ public class SynchronisationService : ISynchronisationService
 
         // The following is test code to visually show the total size of the uploads requested
         var uploadSum = 0f;
-        foreach (var (gameObject, manifestComparison) in manifestComparisons)
+        foreach (var completeManifest in manifestComparisons)
         {
-            var trackedFiles = manifestComparison.Entries
+            var trackedFiles = completeManifest.CloudManifest.Entries
                 .Where(y => y.UploadState == FileUploadState.UploadRequested)
                 .Select(x => _fileTrackingService.GameObjects
-                    .First(y => y.Profile.Id == gameObject.Profile.Id)
+                    .First(y => y.Profile.Id == completeManifest.GameObject.Profile.Id)
                     .TrackedFiles
                     .First(y => y.RelativePath == x.ClientRelativePath)
                 );
@@ -103,14 +107,76 @@ public class SynchronisationService : ISynchronisationService
         uploadSum /= (1024 * 1024); // B -> MB
         statusUpdate.Title = $"({StepText(currentStep++)}) Synchronising";
         statusUpdate.Message = $"{uploadSum}MB worth of game saves are to be uploaded.";
+        statusUpdate.ShowProgressBar = true;
+        foreach (var completeManifest in manifestComparisons)
+        {
+            await UploadRequestedFilesAsync(
+                completeComparison: completeManifest,
+                updateDelegate: (GdTransferProgress progress) =>
+                {
+                    statusUpdate.ProgressValue = (int) Math.Ceiling(progress.ProgressPercentage);
+                }
+            );
+        }
 
         await Task.Delay(5000);
         _statusService.DismissUpdate(statusUpdate);
     }
 
-    private async Task<Result<Dictionary<GameObject, CompareManifestResponse>>> FetchManifestComparisonsAsync()
+    private async Task<Result> UploadRequestedFilesAsync(
+        CompleteManifestComparison completeComparison,
+        IGdFileApi.GdProgressUpdateDelegate updateDelegate
+    )
     {
-        var comparisonResults = new Dictionary<GameObject, CompareManifestResponse>();
+        var gameObject = completeComparison.GameObject;
+        var filteredEntries = completeComparison.CloudManifest.Entries
+            .Where(x => x.UploadState == FileUploadState.UploadRequested)
+            .Select(x => (x, gameObject.TrackedFiles.First(y => y.RelativePath == x.ClientRelativePath)))
+            .ToList();
+
+        var totalUploadedBytes = 0l;
+        var totalUploadSizeBytes = filteredEntries
+            .Select(x => x.Item2)
+            .Sum(x => x.Snapshot?.FileSize ?? 0);
+        
+        GdTransferProgress MapProgress(GdTransferProgress input, int current, int totalFiles)
+        {
+            totalUploadedBytes += input.FileBytesDelta;
+            var filesProgress = (float) current / totalFiles;
+            var uploadProgress = (float)totalUploadedBytes / (float)totalUploadSizeBytes;
+            var totalProgress = (filesProgress * 0.5f) + (uploadProgress * 0.5f);
+            
+            return new GdTransferProgress(
+                FileBytesDownloaded: totalUploadedBytes,
+                FileBytesTotal: totalUploadSizeBytes,
+                FileBytesDelta: input.FileBytesDelta,
+                ProgressPercentage: 100 * totalProgress
+            );
+        }
+
+        var currentFile = 1;
+        foreach (var (cloudManifest, trackedFile) in filteredEntries)
+        {
+            // var localManifestEntry = completeComparison.LocalManifest.Entries
+            //     .First(x => x.Guid == entry.CrossReferenceId);
+            // var trackedFile = gameObject.TrackedFiles.First(x => x.RelativePath == entry.ClientRelativePath);
+            ArgumentNullException.ThrowIfNull(trackedFile.Snapshot);
+            
+            await _fileTransferService.UploadFileAsync(new FileTransferService.UploadFileRequest(
+                LocalGameProfile: gameObject.Profile,
+                FileSnapshot: trackedFile.Snapshot,
+                UpdateDelegate: progress => updateDelegate(MapProgress(progress, currentFile, filteredEntries.Count))
+            ));
+
+            currentFile++;
+        }
+
+        return Result.Success();
+    }
+
+    private async Task<Result<List<CompleteManifestComparison>>> FetchManifestComparisonsAsync()
+    {
+        var comparisonResults = new List<CompleteManifestComparison>();
         foreach (var gameObject in _fileTrackingService.GameObjects)
         {
             var manifestEntries = gameObject.TrackedFiles.Select(x => x.ToManifestEntry());
@@ -125,11 +191,23 @@ public class SynchronisationService : ISynchronisationService
                 Manifest = manifest.ToDto()
             });
             if(!comparisonResult.IsSuccess || comparisonResult.Data is null)
-                return Result.Failure<Dictionary<GameObject, CompareManifestResponse>>($"Failed to fetch manifest comparison for {gameObject.Profile.Id} ({gameObject.Profile.Name})");
+                return Result.Failure<List<CompleteManifestComparison>>($"Failed to fetch manifest comparison for {gameObject.Profile.Id} ({gameObject.Profile.Name})");
             
-            comparisonResults.Add(gameObject, comparisonResult.Data);
+            var completeManifest = new CompleteManifestComparison(
+                LocalManifest: manifest,
+                CloudManifest: comparisonResult.Data,
+                GameObject: gameObject
+            );
+            
+            comparisonResults.Add(completeManifest);
         }
 
         return comparisonResults;
     }
+
+    public record CompleteManifestComparison(
+        GameProfileManifest LocalManifest,
+        CompareManifestResponse CloudManifest,
+        GameObject GameObject
+    );
 }

@@ -5,7 +5,13 @@ using CSharpFunctionalExtensions;
 
 namespace GameDrive.ClientV2.Domain.Synchronisation;
 
-public class FileBackupService
+public interface IFileBackupService
+{
+    Result<string> BackupFile(string filePath);
+    Result RestoreLatestBackup(string filePath);
+}
+
+public class FileBackupService : IFileBackupService
 {
     public Result<string> BackupFile(string filePath)
     {

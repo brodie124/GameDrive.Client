@@ -31,7 +31,7 @@ public partial class App : Application
 
     private static void ConfigureServices(IServiceCollection serviceCollection)
     {
-        const bool useProdApi = true;
+        const bool useProdApi = false;
         serviceCollection
             .UseGameDriveSqliteDatabase("gdclient.sqlite")
             .RegisterGameDriveRepositories()
@@ -43,7 +43,9 @@ public partial class App : Application
         serviceCollection
             .AddSingleton<IStatusService, StatusService>()
             .AddSingleton<ISynchronisationService, SynchronisationService>()
-            .AddSingleton<IFileTrackingService, FileTrackingService>();
+            .AddSingleton<IFileTrackingService, FileTrackingService>()
+            .AddSingleton<IFileTransferService, FileTransferService>()
+            .AddSingleton<IFileBackupService, FileBackupService>();
 
         serviceCollection
             .AddTransient<ICredentialProvider, CredentialProvider>()

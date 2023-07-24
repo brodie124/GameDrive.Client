@@ -137,10 +137,12 @@ public class GdFileApi : GdApiHandler, IGdFileApi
                 continue;
             }
 
+            var delta = position - previousPosition;
             var percentage = 100f * ((float) stream.Position / (float)stream.Length);
             updateDelegate(new GdTransferProgress(
                 FileBytesDownloaded: stream.Position,
                 FileBytesTotal: stream.Length,
+                FileBytesDelta: delta,
                 ProgressPercentage: percentage
             ));
 
@@ -171,5 +173,6 @@ public interface IGdFileApi
 public record GdTransferProgress(
     long FileBytesDownloaded,
     long FileBytesTotal,
+    long FileBytesDelta,
     float ProgressPercentage
 );

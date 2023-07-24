@@ -3,10 +3,13 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using GameDrive.ClientV2.Domain.Models;
+using GameDrive.Server.Domain.Models.Requests;
 using GameDrive.Server.Domain.Models.Responses;
 
 namespace GameDrive.ClientV2.Domain.API;
@@ -78,36 +81,41 @@ public class GdFileApi : GdApiHandler, IGdFileApi
     )
     {
         var boundary = Guid.NewGuid().ToString();
-
-        var bucketId = HttpUtility.UrlEncode(profile.Id);
-        var bucketName = HttpUtility.UrlEncode(profile.Name);
-        var relativeFilePath = HttpUtility.UrlEncode(file.GdFilePath);
-        var fileHash = HttpUtility.UrlEncode(file.FileHash);
-        var fileCreatedDate = HttpUtility.UrlEncode(file.CreatedDate.ToUniversalTime().ToString("s"));
-        var fileLastModifiedDate = HttpUtility.UrlEncode(file.LastModified.ToUniversalTime().ToString("s"));
-        var queryParams = $"bucketId={bucketId}&bucketName={bucketName}&gdFilePath={relativeFilePath}&fileHash={fileHash}&fileCreatedDate={fileCreatedDate}&fileLastModifiedDate={fileLastModifiedDate}";
-
+        var multiPartName = file.GdFilePath;
+        var uploadRequest = new UploadFileRequest(
+            MultiPartName: multiPartName,
+            BucketId: profile.Id,
+            BucketName: profile.Name,
+            GdFilePath: file.GdFilePath,
+            FileHash: file.FileHash,
+            FileCreatedDate: file.CreatedDate,
+            FileLastModifiedDate: file.LastModified
+        );
+        var uploadRequestContent = new StringContent(
+            JsonSerializer.Serialize(uploadRequest),
+            Encoding.UTF8,
+            "application/json"
+        );
 
         await using var fileStream = File.OpenRead(file.Path);
         using var streamContent = new StreamContent(fileStream);
         streamContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
-        streamContent.Headers.ContentDisposition.Name = "\"file\"";
+        streamContent.Headers.ContentDisposition.Name = $"\"{HttpUtility.UrlEncode(uploadRequest.MultiPartName)}\"";
         streamContent.Headers.ContentDisposition.FileName = "\"" + Path.GetFileName(file.Path) + "\"";
         streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-
 
         using var content = new MultipartFormDataContent(boundary);
         content.Headers.Remove("Content-Type");
         content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data; boundary=" + boundary);
+        content.Add(uploadRequestContent, "gd-metadata");
         content.Add(streamContent);
-
 
         var cancellationTokenSource = new CancellationTokenSource();
         _ = Task.Run(() => MonitorStreamProgress(fileStream, updateDelegate, cancellationTokenSource.Token), cancellationTokenSource.Token);
 
         try
         {
-            return await GdHttpHelper.HttpPostMultipartFormData<bool>($"Upload?{queryParams}", content);
+            return await GdHttpHelper.HttpPostMultipartFormData<bool>("Upload", content);
         } catch(Exception)
         {
             cancellationTokenSource.Cancel();

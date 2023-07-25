@@ -20,6 +20,9 @@ public interface ISynchronisationService
 }
 public class SynchronisationService : ISynchronisationService
 {
+    private const long UploadBufferMaxSize = 64 * 1024 * 1024;
+    private const long UploadBufferMaxLength = 128;
+    
     private readonly IGdApi _gdApi;
     private readonly IStatusService _statusService;
     private readonly IFileTrackingService _fileTrackingService;
@@ -132,6 +135,7 @@ public class SynchronisationService : ISynchronisationService
         var filteredEntries = completeComparison.CloudManifest.Entries
             .Where(x => x.UploadState == FileUploadState.UploadRequested)
             .Select(x => (x, gameObject.TrackedFiles.First(y => y.RelativePath == x.ClientRelativePath)))
+            .OrderBy(x => x.Item2.Snapshot?.FileSize ?? 0)
             .ToList();
 
         var totalUploadedBytes = 0l;
@@ -155,20 +159,39 @@ public class SynchronisationService : ISynchronisationService
         }
 
         var currentFile = 1;
+        var uploadBuffer = new List<GdApiUploadFileRequest>();
         foreach (var (cloudManifest, trackedFile) in filteredEntries)
         {
-            // var localManifestEntry = completeComparison.LocalManifest.Entries
-            //     .First(x => x.Guid == entry.CrossReferenceId);
-            // var trackedFile = gameObject.TrackedFiles.First(x => x.RelativePath == entry.ClientRelativePath);
             ArgumentNullException.ThrowIfNull(trackedFile.Snapshot);
-            
-            await _fileTransferService.UploadFileAsync(new GdApiUploadFileRequest(
-                Profile: gameObject.Profile,
-                FileSnapshot: trackedFile.Snapshot,
-                UpdateDelegate: progress => updateDelegate(MapProgress(progress, currentFile, filteredEntries.Count))
-            ));
+            var uploadBufferSize = uploadBuffer.Sum(x => x.FileSnapshot.FileSize);
+            if (uploadBufferSize + trackedFile.Snapshot.FileSize <= UploadBufferMaxSize)
+            {
+                uploadBuffer.Add(new GdApiUploadFileRequest(
+                    Profile: gameObject.Profile,
+                    FileSnapshot: trackedFile.Snapshot,
+                    UpdateDelegate: progress => // FIXME: This update delegate is currently broken 
+                        updateDelegate(MapProgress(progress, currentFile, filteredEntries.Count))
+                ));
+            }
 
+            uploadBufferSize = uploadBuffer.Sum(x => x.FileSnapshot.FileSize);
+            if (uploadBufferSize < UploadBufferMaxSize
+                || uploadBuffer.Count >= UploadBufferMaxLength
+                || uploadBuffer.Count == 0
+               )
+            {
+                continue;
+            }
+
+            var result = await _fileTransferService.UploadFilesBulkAsync(uploadBuffer);
+            uploadBuffer.Clear();
             currentFile++;
+        }
+
+        // Clear the buffer if it is not empty
+        if (uploadBuffer.Count > 0)
+        {
+            var result = await _fileTransferService.UploadFilesBulkAsync(uploadBuffer);
         }
 
         return Result.Success();

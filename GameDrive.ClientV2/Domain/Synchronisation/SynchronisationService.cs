@@ -162,8 +162,8 @@ public class SynchronisationService : ISynchronisationService
             // var trackedFile = gameObject.TrackedFiles.First(x => x.RelativePath == entry.ClientRelativePath);
             ArgumentNullException.ThrowIfNull(trackedFile.Snapshot);
             
-            await _fileTransferService.UploadFileAsync(new FileTransferService.UploadFileRequest(
-                LocalGameProfile: gameObject.Profile,
+            await _fileTransferService.UploadFileAsync(new GdApiUploadFileRequest(
+                Profile: gameObject.Profile,
                 FileSnapshot: trackedFile.Snapshot,
                 UpdateDelegate: progress => updateDelegate(MapProgress(progress, currentFile, filteredEntries.Count))
             ));

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -75,52 +76,69 @@ public class GdFileApi : GdApiHandler, IGdFileApi
     }
 
     public async ValueTask<ApiResponse<bool>> UploadFile(
-        LocalGameProfile profile, 
-        FileSnapshot file,
-        IGdFileApi.GdProgressUpdateDelegate updateDelegate
+        GdApiUploadFileRequest uploadFileRequest
     )
     {
-        var boundary = Guid.NewGuid().ToString();
-        var multiPartName = file.GdFilePath;
-        var uploadRequest = new UploadFileRequest(
-            MultiPartName: multiPartName,
-            BucketId: profile.Id,
-            BucketName: profile.Name,
-            GdFilePath: file.GdFilePath,
-            FileHash: file.FileHash,
-            FileCreatedDate: file.CreatedDate,
-            FileLastModifiedDate: file.LastModified
-        );
-        var uploadRequestContent = new StringContent(
-            JsonSerializer.Serialize(uploadRequest),
-            Encoding.UTF8,
-            "application/json"
-        );
+        return await UploadFilesBulk(new List<GdApiUploadFileRequest>() { uploadFileRequest });
+    }
 
-        await using var fileStream = File.OpenRead(file.Path);
-        using var streamContent = new StreamContent(fileStream);
-        streamContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
-        streamContent.Headers.ContentDisposition.Name = $"\"{HttpUtility.UrlEncode(uploadRequest.MultiPartName)}\"";
-        streamContent.Headers.ContentDisposition.FileName = "\"" + Path.GetFileName(file.Path) + "\"";
-        streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+    public async ValueTask<ApiResponse<bool>> UploadFilesBulk(IEnumerable<GdApiUploadFileRequest> uploadFileRequests)
+    {
+        var boundary = Guid.NewGuid().ToString();
 
         using var content = new MultipartFormDataContent(boundary);
         content.Headers.Remove("Content-Type");
         content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data; boundary=" + boundary);
-        content.Add(uploadRequestContent, "gd-metadata");
-        content.Add(streamContent);
 
-        var cancellationTokenSource = new CancellationTokenSource();
-        _ = Task.Run(() => MonitorStreamProgress(fileStream, updateDelegate, cancellationTokenSource.Token), cancellationTokenSource.Token);
+        var fileStreams = new List<Stream>();
+        foreach (var request in uploadFileRequests)
+        {
+            var fileSnapshot = request.FileSnapshot;
+            var profile = request.Profile;
+            var multiPartName = HttpUtility.UrlEncode(fileSnapshot.GdFilePath);
+            var uploadRequest = new UploadFileRequest(
+                MultiPartName: multiPartName,
+                BucketId: profile.Id,
+                BucketName: profile.Name,
+                GdFilePath: fileSnapshot.GdFilePath,
+                FileHash: fileSnapshot.FileHash,
+                FileCreatedDate: fileSnapshot.CreatedDate,
+                FileLastModifiedDate: fileSnapshot.LastModified
+            );
 
-        try
-        {
-            return await GdHttpHelper.HttpPostMultipartFormData<bool>("Upload", content);
-        } catch(Exception)
-        {
-            cancellationTokenSource.Cancel();
-            throw;
+            
+            var uploadRequestContent = new StringContent(
+                JsonSerializer.Serialize(uploadRequest),
+                Encoding.UTF8,
+                "application/json"
+            );
+            content.Add(uploadRequestContent, "gd-metadata");
+            
+            
+            var fileStream = File.OpenRead(fileSnapshot.Path);
+            fileStreams.Add(fileStream);
+            
+            var streamContent = new StreamContent(fileStream);
+            streamContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
+            streamContent.Headers.ContentDisposition.Name = $"\"{uploadRequest.MultiPartName}\"";
+            streamContent.Headers.ContentDisposition.FileName = "\"" + Path.GetFileName(fileSnapshot.Path) + "\"";
+            streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            content.Add(streamContent);
+            
+            var cancellationTokenSource = new CancellationTokenSource();
+            _ = Task.Run(
+                () => MonitorStreamProgress(
+                    fileStream, 
+                    request.UpdateDelegate, 
+                    cancellationTokenSource.Token
+                ), cancellationTokenSource.Token
+            );
         }
+        
+        var result = await GdHttpHelper.HttpPostMultipartFormData<bool>("Upload", content);
+        fileStreams.ForEach(x => x.Close());
+        
+        return result;
     }
 
     private async void MonitorStreamProgress(
@@ -129,33 +147,41 @@ public class GdFileApi : GdApiHandler, IGdFileApi
         CancellationToken cancellationToken = default
     )
     {
-        var previousPosition = -1L;
-        while(!cancellationToken.IsCancellationRequested && (stream.CanRead || stream.CanWrite))
+        try
         {
-            if (stream is { Position: 0, Length: 0 })
+            var previousPosition = -1L;
+            while (!cancellationToken.IsCancellationRequested && (stream.CanRead || stream.CanWrite))
             {
+                if (stream is { Position: 0, Length: 0 })
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
+                    continue;
+                }
+
+                var position = stream.Position;
+                if (position == previousPosition)
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
+                    continue;
+                }
+
+                var delta = position - previousPosition;
+                var percentage = 100f * ((float)stream.Position / (float)stream.Length);
+                updateDelegate(new GdTransferProgress(
+                    FileBytesDownloaded: stream.Position,
+                    FileBytesTotal: stream.Length,
+                    FileBytesDelta: delta,
+                    ProgressPercentage: percentage
+                ));
+
                 await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
-                continue;
+                previousPosition = position;
             }
-
-            var position = stream.Position;
-            if (position == previousPosition)
-            {
-                await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
-                continue;
-            }
-
-            var delta = position - previousPosition;
-            var percentage = 100f * ((float) stream.Position / (float)stream.Length);
-            updateDelegate(new GdTransferProgress(
-                FileBytesDownloaded: stream.Position,
-                FileBytesTotal: stream.Length,
-                FileBytesDelta: delta,
-                ProgressPercentage: percentage
-            ));
-
-            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
-            previousPosition = position;
+        }
+        catch (IOException ex)
+        {
+            Console.Error.WriteLine(ex);
+            return;
         }
     }
 }
@@ -172,9 +198,11 @@ public interface IGdFileApi
     );
 
     ValueTask<ApiResponse<bool>> UploadFile(
-        LocalGameProfile profile,
-        FileSnapshot file,
-        GdProgressUpdateDelegate updateDelegate
+        GdApiUploadFileRequest uploadFileRequest
+    );
+    
+    ValueTask<ApiResponse<bool>> UploadFilesBulk(
+        IEnumerable<GdApiUploadFileRequest> uploadFileRequests
     );
 }
 
@@ -183,4 +211,10 @@ public record GdTransferProgress(
     long FileBytesTotal,
     long FileBytesDelta,
     float ProgressPercentage
+);
+
+public record GdApiUploadFileRequest(
+    LocalGameProfile Profile,
+    FileSnapshot FileSnapshot,
+    IGdFileApi.GdProgressUpdateDelegate UpdateDelegate
 );

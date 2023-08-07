@@ -111,18 +111,40 @@ public class SynchronisationService : ISynchronisationService
         statusUpdate.Title = $"({StepText(currentStep++)}) Synchronising";
         statusUpdate.Message = $"{uploadSum}MB worth of game saves are to be uploaded.";
         statusUpdate.ShowProgressBar = true;
-        foreach (var completeManifest in manifestComparisons)
+        foreach (var completeManifest in manifestComparisons.Where(x => x.GameObject.ProfileName == "RimWorld").Take(1))
         {
-            await UploadRequestedFilesAsync(
+            var result = await UploadRequestedFilesAsync(
                 completeComparison: completeManifest,
                 updateDelegate: (GdTransferProgress progress) =>
                 {
                     statusUpdate.ProgressValue = (int) Math.Ceiling(progress.ProgressPercentage);
                 }
             );
-        }
 
-        await Task.Delay(5000);
+            if (result.IsSuccess) 
+                continue;
+
+            StatusUpdateBuilder
+                .Start()
+                .WithType(StatusType.Error)
+                .IsClosable(true)
+                .WithTitle("Synchronisation failed")
+                .WithMessage("An error occurred whilst synchronising your game saves. Please try again later.")
+                .Build()
+                .CopyInto(statusUpdate);
+            break;
+        }
+        
+        StatusUpdateBuilder
+            .Start()
+            .WithType(StatusType.Success)
+            .IsClosable(true)
+            .WithTitle("Synchronisation complete")
+            .WithMessage("Your game saves have been synchronised.")
+            .Build()
+            .CopyInto(statusUpdate);
+
+        await Task.Delay(10000);
         _statusService.DismissUpdate(statusUpdate);
     }
 
@@ -164,28 +186,21 @@ public class SynchronisationService : ISynchronisationService
         {
             ArgumentNullException.ThrowIfNull(trackedFile.Snapshot);
             var uploadBufferSize = uploadBuffer.Sum(x => x.FileSnapshot.FileSize);
-            if (uploadBufferSize + trackedFile.Snapshot.FileSize <= UploadBufferMaxSize)
+
+            var uploadQueueHasCapacity = uploadBufferSize + trackedFile.Snapshot.FileSize <= UploadBufferMaxSize;
+            if (uploadBuffer.Count > 0 && (!uploadQueueHasCapacity || uploadBuffer.Count >= UploadBufferMaxLength))
             {
-                uploadBuffer.Add(new GdApiUploadFileRequest(
-                    Profile: gameObject.Profile,
-                    FileSnapshot: trackedFile.Snapshot,
-                    UpdateDelegate: progress => // FIXME: This update delegate is currently broken 
-                        updateDelegate(MapProgress(progress, currentFile, filteredEntries.Count))
-                ));
+                var result = await _fileTransferService.UploadFilesBulkAsync(uploadBuffer);
+                currentFile += uploadBuffer.Count;
+                uploadBuffer.Clear();
             }
 
-            uploadBufferSize = uploadBuffer.Sum(x => x.FileSnapshot.FileSize);
-            if (uploadBufferSize < UploadBufferMaxSize
-                || uploadBuffer.Count >= UploadBufferMaxLength
-                || uploadBuffer.Count == 0
-               )
-            {
-                continue;
-            }
-
-            var result = await _fileTransferService.UploadFilesBulkAsync(uploadBuffer);
-            uploadBuffer.Clear();
-            currentFile++;
+            uploadBuffer.Add(new GdApiUploadFileRequest(
+                Profile: gameObject.Profile,
+                FileSnapshot: trackedFile.Snapshot,
+                UpdateDelegate: progress => // FIXME: This update delegate is currently broken 
+                    updateDelegate(MapProgress(progress, currentFile, filteredEntries.Count))
+            ));
         }
 
         // Clear the buffer if it is not empty

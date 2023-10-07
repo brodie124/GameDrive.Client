@@ -31,7 +31,7 @@ public partial class App : Application
 
     private static void ConfigureServices(IServiceCollection serviceCollection)
     {
-        const bool useProdApi = false;
+        const bool useProdApi = true;
         serviceCollection
             .UseGameDriveSqliteDatabase("gdclient.sqlite")
             .RegisterGameDriveRepositories()

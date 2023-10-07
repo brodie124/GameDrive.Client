@@ -23,6 +23,11 @@ public class GameObject
         Profile = profile;
     }
 
+    public void SetTrackedFilesFromData(List<TrackedFile> trackedFiles)
+    {
+        _matchedFiles = trackedFiles;
+    }
+
     public async Task<IReadOnlyCollection<string>> CheckTrackedFilesAsync()
     {
         var changedFiles = new List<string>();
@@ -36,11 +41,22 @@ public class GameObject
 
     public async Task<IReadOnlyCollection<TrackedFile>> FindTrackedFilesAsync()
     {
-        _matchedFiles.Clear();
         var directoryInfo = new DirectoryInfo(Profile.BaseDirectory.ResolvedPath);
         var files = await ScanDirectoryRecursivelyAsync(directoryInfo);
+
+        var flattenedFiles = new List<TrackedFile>();
+        foreach (var file in files)
+        {
+            var existingFile = _matchedFiles.Find(x => file.RelativePath == x.RelativePath);
+            var fileToUse = existingFile ?? file;
+            await fileToUse.CaptureSnapshotAsync();
+            
+            flattenedFiles.Add(fileToUse);
+        }
+        
+        _matchedFiles.Clear();
         _matchedFiles.AddRange(
-            files.Where(x => GdFileExtensionBlockList.IsAllowed(x.FilePath))
+            flattenedFiles.Where(x => GdFileExtensionBlockList.IsAllowed(x.FilePath))
         );
 
         return _matchedFiles;
@@ -73,8 +89,7 @@ public class GameObject
                 filePath: file.FullName,
                 relativePath: relativePath
             );
-
-            await trackedFile.CaptureSnapshotAsync();
+            
             validFiles.Add(trackedFile);
         }
 

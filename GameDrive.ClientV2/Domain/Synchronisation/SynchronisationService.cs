@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
+using GameDrive.ClientV2.ConflictResolver;
 using GameDrive.ClientV2.Domain.API;
+using GameDrive.ClientV2.Domain.Database.Repositories;
 using GameDrive.ClientV2.Domain.Models;
 using GameDrive.ClientV2.Domain.Models.Extensions;
 using GameDrive.ClientV2.Domain.Status;
@@ -27,18 +29,21 @@ public class SynchronisationService : ISynchronisationService
     private readonly IStatusService _statusService;
     private readonly IFileTrackingService _fileTrackingService;
     private readonly IFileTransferService _fileTransferService;
-    
+    private readonly ITrackedFileRepository _trackedFileRepository;
+
     public SynchronisationService(
         IGdApi gdApi,
         IStatusService statusService,
         IFileTrackingService fileTrackingService,
-        IFileTransferService fileTransferService
+        IFileTransferService fileTransferService,
+        ITrackedFileRepository trackedFileRepository
     )
     {
         _gdApi = gdApi;
         _statusService = statusService;
         _fileTrackingService = fileTrackingService;
         _fileTransferService = fileTransferService;
+        _trackedFileRepository = trackedFileRepository;
     }
     
     public async Task SynchroniseAsync()
@@ -79,6 +84,17 @@ public class SynchronisationService : ISynchronisationService
 
         if (conflictCount > 0)
         {
+            var conflictedManifestComparisons = manifestComparisons
+                .Where(x => x.CloudManifest.Entries.Any(x => x.DiffState == FileDiffState.Conflict))
+                .ToList();
+            var conflictResolverWindow = new ConflictResolverWindow(new ConflictResolverViewModel()
+            {
+                ManifestComparisons = conflictedManifestComparisons
+            });
+
+            // TODO: we should only resume the synchronisation if the conflict resolution is successful
+            conflictResolverWindow.ShowDialog();
+            
             // TODO: update this status update to use buttons (continue, cancel)
             StatusUpdateBuilder.Start()
                 .IsClosable(true)
@@ -121,8 +137,14 @@ public class SynchronisationService : ISynchronisationService
                 }
             );
 
-            if (result.IsSuccess) 
+            if (result.IsSuccess)
+            {
+                foreach (var trackedFile in completeManifest.GameObject.TrackedFiles)
+                {
+                    await UpdateTrackedFileAfterSync(trackedFile);
+                }
                 continue;
+            }
 
             StatusUpdateBuilder
                 .Start()
@@ -227,6 +249,13 @@ public class SynchronisationService : ISynchronisationService
 
         return comparisonResults;
     }
+
+    private async Task UpdateTrackedFileAfterSync(TrackedFile trackedFile)
+    {
+        trackedFile.LastSynchronisedTime = DateTime.Now;
+        trackedFile.PreviouslyTrackedLastModifiedDate = trackedFile.Snapshot?.LastModified;
+        await _trackedFileRepository.AddOrUpdateAsync(trackedFile);
+    }
     
     private GdTransferProgress MapProgress(
         GdTransferProgress input, 
@@ -247,10 +276,4 @@ public class SynchronisationService : ISynchronisationService
             ProgressPercentage: 100 * totalProgress
         );
     }
-
-    public record CompleteManifestComparison(
-        GameProfileManifest LocalManifest,
-        CompareManifestResponse CloudManifest,
-        GameObject GameObject
-    );
 }

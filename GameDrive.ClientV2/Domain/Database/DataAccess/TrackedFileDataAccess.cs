@@ -48,8 +48,8 @@ public class TrackedFileDataAccess : ITrackedFileDataAccess
 
         var connection = _databaseContext.GetConnection();
         var affectedRowCount = await connection.ExecuteAsync(
-            "INSERT OR REPLACE INTO tracked_files (ProfileId, FilePath, RelativePath, FileHash, MetadataHash, FirstCheckedTime, LastCheckedTime, LastSynchronisedTime) " +
-            "VALUES (@ProfileId, @FilePath, @RelativePath, @FileHash, @MetadataHash, @FirstCheckedTime, @LastCheckedTime, @LastSynchronisedTime);",
+            "INSERT OR REPLACE INTO tracked_files (ProfileId, FilePath, RelativePath, FileHash, MetadataHash, FirstCheckedTime, LastCheckedTime, LastSynchronisedTime, PreviouslyTrackedLastModifiedDate) " +
+            "VALUES (@ProfileId, @FilePath, @RelativePath, @FileHash, @MetadataHash, @FirstCheckedTime, @LastCheckedTime, @LastSynchronisedTime, @PreviouslyTrackedLastModifiedDate);",
             trackedFile,
             transaction
         );

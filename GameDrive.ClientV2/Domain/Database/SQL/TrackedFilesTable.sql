@@ -7,5 +7,6 @@
 	"FirstCheckedTime"	TEXT NOT NULL,
 	"LastCheckedTime"	TEXT,
 	"LastSynchronisedTime"	TEXT,
+	"PreviouslyTrackedLastModifiedDate"	TEXT,
 	PRIMARY KEY("FilePath")
 );

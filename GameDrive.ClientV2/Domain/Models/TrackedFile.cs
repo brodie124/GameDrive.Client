@@ -19,6 +19,7 @@ public class  TrackedFile : INotifyPropertyChanged
     public string FilePath { get; set; } = default!;
     public string RelativePath { get; set; } = default!;
     public string? StoredFileHash { get; set; }
+    public DateTime? PreviouslyTrackedLastModifiedDate { get; set; }
 
     public DateTime FirstCheckedTime { get; set; }
     public DateTime LastCheckedTime {

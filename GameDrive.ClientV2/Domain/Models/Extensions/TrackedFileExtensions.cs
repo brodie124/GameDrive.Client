@@ -15,6 +15,7 @@ public static class TrackedFileExtensions
             FileHash = trackedFile.Snapshot.FileHash,
             FileSize = trackedFile.Snapshot.FileSize,
             IsDeleted = trackedFile.IsFileMissing,
+            ClientPreviousLastModifiedDate = trackedFile.PreviouslyTrackedLastModifiedDate,
             LastModifiedDate = trackedFile.Snapshot.LastModified,
             CreatedDate = trackedFile.Snapshot.CreatedDate,
         };

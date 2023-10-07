@@ -48,6 +48,9 @@ public class GameObject
 
     private async Task<IReadOnlyCollection<TrackedFile>> ScanDirectoryRecursivelyAsync(DirectoryInfo directoryInfo)
     {
+        if (!directoryInfo.Exists)
+            return Array.Empty<TrackedFile>().ToList();
+        
         var validFiles = new List<TrackedFile>();
         var directories = directoryInfo.GetDirectories();
         foreach (var subDirectory in directories)

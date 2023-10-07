@@ -27,7 +27,7 @@ public class SynchronisationService : ISynchronisationService
     private readonly IStatusService _statusService;
     private readonly IFileTrackingService _fileTrackingService;
     private readonly IFileTransferService _fileTransferService;
-
+    
     public SynchronisationService(
         IGdApi gdApi,
         IStatusService statusService,
@@ -160,25 +160,10 @@ public class SynchronisationService : ISynchronisationService
             .OrderBy(x => x.Item2.Snapshot?.FileSize ?? 0)
             .ToList();
 
-        var totalUploadedBytes = 0l;
+        var totalUploadedBytes = 0L;
         var totalUploadSizeBytes = filteredEntries
             .Select(x => x.Item2)
             .Sum(x => x.Snapshot?.FileSize ?? 0);
-        
-        GdTransferProgress MapProgress(GdTransferProgress input, int current, int totalFiles)
-        {
-            totalUploadedBytes += input.FileBytesDelta;
-            var filesProgress = (float) current / totalFiles;
-            var uploadProgress = (float)totalUploadedBytes / (float)totalUploadSizeBytes;
-            var totalProgress = (filesProgress * 0.5f) + (uploadProgress * 0.5f);
-            
-            return new GdTransferProgress(
-                FileBytesDownloaded: totalUploadedBytes,
-                FileBytesTotal: totalUploadSizeBytes,
-                FileBytesDelta: input.FileBytesDelta,
-                ProgressPercentage: 100 * totalProgress
-            );
-        }
 
         var currentFile = 1;
         var uploadBuffer = new List<GdApiUploadFileRequest>();
@@ -199,7 +184,7 @@ public class SynchronisationService : ISynchronisationService
                 Profile: gameObject.Profile,
                 FileSnapshot: trackedFile.Snapshot,
                 UpdateDelegate: progress => // FIXME: This update delegate is currently broken 
-                    updateDelegate(MapProgress(progress, currentFile, filteredEntries.Count))
+                    updateDelegate(MapProgress(progress, currentFile, filteredEntries.Count, ref totalUploadedBytes))
             ));
         }
 
@@ -241,6 +226,26 @@ public class SynchronisationService : ISynchronisationService
         }
 
         return comparisonResults;
+    }
+    
+    private GdTransferProgress MapProgress(
+        GdTransferProgress input, 
+        int current, 
+        int totalFiles, 
+        ref long totalBytesTransferred
+    )
+    {
+        totalBytesTransferred += input.FileBytesDelta;
+        var filesProgress = (float) current / totalFiles;
+        var uploadProgress = (float)totalBytesTransferred / (float)totalBytesTransferred;
+        var totalProgress = (filesProgress * 0.5f) + (uploadProgress * 0.5f);
+            
+        return new GdTransferProgress(
+            FileBytesDownloaded: totalBytesTransferred,
+            FileBytesTotal: totalBytesTransferred,
+            FileBytesDelta: input.FileBytesDelta,
+            ProgressPercentage: 100 * totalProgress
+        );
     }
 
     public record CompleteManifestComparison(
